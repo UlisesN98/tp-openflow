@@ -5,13 +5,17 @@ from pox.lib.util import dpidToStr
 from pox.lib.addresses import EthAddr
 from collections import namedtuple
 import os
+import json
 
 log = core.getLogger()
+
+RULES_PATH = "pox/misc/rules.json"
 
 class Controller(EventMixin):
     def __init__(self):
         log.info("Controller Init")
         self.listenTo(core.openflow)
+        self.rules = self.get_rules()
         log.debug("Enabling␣Firewall␣Module")
         self.mac_to_port = {}
         
@@ -38,6 +42,15 @@ class Controller(EventMixin):
         msg = of.ofp_packet_out(data=event.ofp)
         msg.actions.append(of.ofp_action_output(port=out_port))
         event.connection.send(msg)
+
+    def get_rules(self):
+        if os.path.exists(RULES_PATH):
+            with open(RULES_PATH) as f:
+                log.info("Loaded rules from %s", RULES_PATH)
+                return json.load(f)
+        else:
+            log.error("Rules file %s not found", RULES_PATH)
+            return []
 
 def launch():
     log.info("Controller Launch")
