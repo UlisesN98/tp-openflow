@@ -1,0 +1,28 @@
+[
+    {
+        "name": "Block port 80 (TCP)",
+        "protocol": "TCP",
+        "dst_port": 80
+    },
+    {
+        "name": "Block port 80 (UDP)",
+        "protocol": "UDP",
+        "dst_port": 80
+    },
+    {
+        "name": "Block host_1 with UDP and port 5001",
+        "src_ip": "10.0.0.1",
+        "protocol": "UDP",
+        "dst_port": 5001
+    },
+    {
+        "name": "Block host_1 -> host_3",
+        "src_mac": "00:00:00:00:00:01",
+        "dst_mac": "00:00:00:00:00:03"
+    },
+    {
+        "name": "Block host_3 -> host_1",
+        "src_mac": "00:00:00:00:00:03",
+        "dst_mac": "00:00:00:00:00:01"
+    }
+]
