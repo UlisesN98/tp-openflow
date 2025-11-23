@@ -11,6 +11,8 @@ log = core.getLogger()
 
 RULES_PATH = "pox/misc/rules.json"
 
+FIREWALL_SWITCH = "00-00-00-00-00-02"
+
 class Controller(EventMixin):
     def __init__(self):
         log.info("Controller Init")
@@ -22,6 +24,14 @@ class Controller(EventMixin):
     def _handle_ConnectionUp(self, event):
         dpid = event.dpid
         dpid_str = dpidToStr(dpid)
+
+        if dpid_str != FIREWALL_SWITCH:
+            log.info("Instalando comportamiento NORMAL en switch %s", dpid_str)
+            fm = of.ofp_flow_mod()
+            fm.priority = 1
+            fm.actions.append(of.ofp_action_output(port=of.OFPP_NORMAL))
+            event.connection.send(fm)
+            return
         log.info("ConnectionUp Switch: %s", dpid_str)
 
         self.mac_to_port[dpid_str] = {}
@@ -29,6 +39,9 @@ class Controller(EventMixin):
     def _handle_PacketIn(self, event):
         packet = event.parsed
         dpid_str = dpidToStr(event.dpid)
+    
+        if dpid_str != FIREWALL_SWITCH:
+            return
 
         in_port = event.port
         # Aprendo la MAC origen
