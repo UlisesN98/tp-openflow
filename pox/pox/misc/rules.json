@@ -1,12 +1,7 @@
 [
     {
-        "name": "Block port 80 (TCP)",
-        "protocol": "TCP",
-        "dst_port": 80
-    },
-    {
-        "name": "Block port 80 (UDP)",
-        "protocol": "UDP",
+        "name": "Block port 80",
+        "protocol": "ANY",
         "dst_port": 80
     },
     {

@@ -8,14 +8,14 @@ class CustomTopo(Topo):
         # Create switches
         switches = []
         for i in range(num_switches):
-            s = self.addSwitch(f'switch_{i+1}')
+            s = self.addSwitch(f's{i+1}')
             switches.append(s)
                                
         # Create hosts
-        h1 = self.addHost('host_1')
-        h2 = self.addHost('host_2')
-        h3 = self.addHost('host_3')
-        h4 = self.addHost('host_4')
+        h1 = self.addHost('h1')
+        h2 = self.addHost('h2')
+        h3 = self.addHost('h3')
+        h4 = self.addHost('h4')
 
         # Add links between switches and hosts
         self.addLink(switches[0], h1)

@@ -29,19 +29,45 @@ class Controller(EventMixin):
     def _handle_PacketIn(self, event):
         packet = event.parsed
         dpid_str = dpidToStr(event.dpid)
-        log.info("PacketIn: %s", dpid_str)
 
         in_port = event.port
+        # Aprendo la MAC origen
         self.mac_to_port[dpid_str][packet.src] = in_port
 
+        # Si sé dónde está la MAC destino → salida específica
         if packet.dst in self.mac_to_port[dpid_str]:
             out_port = self.mac_to_port[dpid_str][packet.dst]
+
+            # Evito loops
+            if out_port == in_port:
+                log.warning("Dropping: src y dst en el mismo puerto (%s)", in_port)
+                return
+
+            # Instalo la regla en el switch
+            fm = of.ofp_flow_mod()
+            fm.match.dl_dst = packet.dst
+            fm.actions.append(of.ofp_action_output(port=out_port))
+            event.connection.send(fm)
+
+            # Y además envío este paquete pendiente
+            msg = of.ofp_packet_out(data=event.ofp.data)
+            msg.actions.append(of.ofp_action_output(port=out_port))
+            msg.in_port = in_port
+            event.connection.send(msg)
+
+            log.info("Aprendido %s → %s en %s (regla instalada)",
+                     packet.dst, out_port, dpid_str)
+
         else:
+            # No conozco destino → flooding
             out_port = of.OFPP_FLOOD
-        
-        msg = of.ofp_packet_out(data=event.ofp)
-        msg.actions.append(of.ofp_action_output(port=out_port))
-        event.connection.send(msg)
+
+            msg = of.ofp_packet_out(data=event.ofp.data)
+            msg.actions.append(of.ofp_action_output(port=out_port))
+            msg.in_port = in_port
+            event.connection.send(msg)
+
+            log.info("Flooding en %s para %s", dpid_str, packet.dst)
 
     def get_rules(self):
         if os.path.exists(RULES_PATH):
