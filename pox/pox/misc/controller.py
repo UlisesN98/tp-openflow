@@ -2,7 +2,7 @@ from pox.core import core
 import pox.openflow.libopenflow_01 as of
 from pox.lib.revent import *
 from pox.lib.util import dpidToStr
-from pox.lib.addresses import EthAddr
+from pox.lib.addresses import EthAddr, IPAddr
 from collections import namedtuple
 import os
 import json
@@ -32,9 +32,37 @@ class Controller(EventMixin):
             fm.actions.append(of.ofp_action_output(port=of.OFPP_NORMAL))
             event.connection.send(fm)
             return
-        log.info("ConnectionUp Switch: %s", dpid_str)
-
+        
+        # log.info("ConnectionUp Switch: %s", dpid_str)
         self.mac_to_port[dpid_str] = {}
+        log.info("Instalando reglas de firewall en %s", dpid_str)
+        for rule in self.rules:
+            fm = of.ofp_flow_mod()
+            fm.priority = 200
+
+            # Filtrado por puerto destino (TCP/UDP)
+            if 'dst_port' in rule:
+                fm.match.dl_type = 0x800  # IPv4
+                if rule.get('protocol') == "TCP":
+                    fm.match.nw_proto = 6
+                elif rule.get('protocol') == "UDP":
+                    fm.match.nw_proto = 17
+                fm.match.tp_dst = rule['dst_port']
+
+            # Filtrado por IP de origen
+            if 'src_ip' in rule:
+                fm.match.dl_type = 0x800
+                fm.match.nw_src = (IPAddr(rule['src_ip']))
+
+            # Filtrado por MAC origen/destino
+            if 'src_mac' in rule:
+                fm.match.dl_src = (EthAddr(rule['src_mac']))
+            if 'dst_mac' in rule:
+                fm.match.dl_dst = (EthAddr(rule['dst_mac']))
+
+            # ¡Sin acciones → drop!
+            event.connection.send(fm)
+            log.info("Firewall rule instalada: %s", rule['name'])
     
     def _handle_PacketIn(self, event):
         packet = event.parsed
