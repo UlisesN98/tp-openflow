@@ -24,22 +24,46 @@ class Controller(EventMixin):
     def get_rules(self):
         if os.path.exists(RULES_PATH):
             with open(RULES_PATH) as f:
+                raw_rules = json.load(f)
                 log.info("Loaded rules from %s", RULES_PATH)
-                return json.load(f)
+                
+                expanded_rules = []
+                for rule in raw_rules:
+                    protocol = rule.get("protocol", "").upper()
+                    has_port = "dst_port" in rule or "src_port" in rule
+                    
+                    # Expandir por protocolo (si es ANY con puerto)
+                    if protocol == "ANY" and has_port:
+                        # Expandir a TCP y UDP
+                        for p in ["TCP", "UDP", "SCTP"]:
+                            r2 = dict(rule)
+                            r2["protocol"] = p
+                            r2["ip_version"] = "IPv4"
+                            
+                            # Actualizar nombre para distinguir
+                            if "name" in r2:
+                                r2["name"] = f"{r2['name']} ({p})"
+                            
+                            expanded_rules.append(r2)
+                    else:
+                        # Regla normal (no expandir)
+                        r2 = dict(rule)
+                        
+                        # Agregar IPv4 si usa protocolos L3/L4
+                        if protocol in ["TCP", "UDP", "ICMP", "SCTP"] or has_port or "src_ip" in rule or "dst_ip" in rule:
+                            r2["ip_version"] = "IPv4"
+                        
+                        expanded_rules.append(r2)
+                
+                log.info("Expanded %d rules to %d rules", len(raw_rules), len(expanded_rules))
+                return expanded_rules
         else:
             log.error("Rules file %s not found", RULES_PATH)
             return []
 
     def install_rule(self, rule, connection):
-        proto = rule.get("protocol", "").upper()
-
-        # Si ANY y puerto -> desdoblamos en TCP y UDP
-        if proto == "ANY" and ("dst_port" in rule or "src_port" in rule):
-            for p in ["TCP", "UDP"]:
-                r2 = dict(rule)
-                r2["protocol"] = p
-                self.install_rule(r2, connection)
-            return
+        protocol = rule.get("protocol", "").upper()
+        ip_version = rule.get("ip_version")  # ← Quitar default
 
         # Construí el flow_mod
         fm = of.ofp_flow_mod()
@@ -47,15 +71,18 @@ class Controller(EventMixin):
         fm.match = of.ofp_match()
 
         # Protocol (si se especifica)
-        if proto == "TCP":
+        if protocol == "TCP":
             fm.match.dl_type = 0x0800
             fm.match.nw_proto = 6
-        elif proto == "UDP":
+        elif protocol == "UDP":
             fm.match.dl_type = 0x0800
             fm.match.nw_proto = 17
-        elif proto == "ICMP":
+        elif protocol == "SCTP":  # ← AGREGAR ESTO
             fm.match.dl_type = 0x0800
-            fm.match.nw_proto = 1
+            fm.match.nw_proto = 132
+        elif protocol == "ICMP":
+            fm.match.dl_type = 0x0800
+            fm.match.nw_proto = 1   # ICMPv4
 
         # CAPA 2
         if "src_mac" in rule:
@@ -67,13 +94,20 @@ class Controller(EventMixin):
         if "src_ip" in rule:
             fm.match.dl_type = 0x0800
             fm.match.nw_src = IPAddr(rule["src_ip"])
+            if 'mask_src' in rule:
+                mask = int(rule['mask_src'])
+                fm.match.nw_src = (IPAddr(rule["src_ip"]), mask)
+        
         if "dst_ip" in rule:
             fm.match.dl_type = 0x0800
             fm.match.nw_dst = IPAddr(rule["dst_ip"])
+            if 'mask_dst' in rule:
+                mask = int(rule['mask_dst'])
+                fm.match.nw_dst = (IPAddr(rule["dst_ip"]), mask)
 
         # PUERTOS (requieren nw_proto definido previamente)
         if "src_port" in rule or "dst_port" in rule:
-            if not hasattr(fm.match, "nw_proto"):
+            if fm.match.nw_proto is None:
                 log.warning("Regla %s ignorada: puerto sin protocolo transport", rule.get("name","<no-name>"))
                 return
             if "src_port" in rule:
@@ -87,56 +121,117 @@ class Controller(EventMixin):
         log.info("Firewall rule installed: %s (priority=%d)", rule.get("name","<no-name>"), fm.priority)
 
     def packet_blocked_by_rule(self, packet):
-        # Pre-extraer info del paquete (puede ser None si no existe)
+        """
+        Retorna un diccionario en formato de regla con los campos que matchearon,
+        o None si el paquete no está bloqueado.
+        """
         eth_src = str(packet.src)
         eth_dst = str(packet.dst)
         ip = packet.find('ipv4')
         udp = packet.find('udp')
         tcp = packet.find('tcp')
+        icmp = packet.find('icmp')
+        sctp = packet.find('sctp')
 
         for rule in self.rules:
-            # Si la regla especifica src_mac/dst_mac y ambas coinciden -> bloquear
-            if 'src_mac' in rule and 'dst_mac' in rule:
-                if eth_src == rule['src_mac'] and eth_dst == rule['dst_mac']:
-                    return True
+            matched_rule = {}  # Formato de regla directamente
+            
+            # Verificar reglas de capa 2
+            if 'src_mac' in rule:
+                if eth_src != rule['src_mac']:
+                    continue
+                matched_rule['src_mac'] = eth_src
+                
+            if 'dst_mac' in rule:
+                if eth_dst != rule['dst_mac']:
+                    continue
+                matched_rule['dst_mac'] = eth_dst
 
-            # Si la regla es L3/L4 y el paquete es IPv4, comparar
+            # Verificar reglas L3/L4
+            protocol = rule.get('protocol', '').upper()
+            
+            # Si la regla requiere IP pero el paquete no es IP -> no matchea
+            if ('src_ip' in rule or 'dst_ip' in rule or protocol in ['TCP', 'UDP', 'ICMP', 'SCTP']) and ip is None:
+                continue
+            
             if ip is not None:
-                # src_ip/dst_ip si están
-                if 'src_ip' in rule and str(ip.srcip) != rule['src_ip']:
-                    continue
-                if 'dst_ip' in rule and str(ip.dstip) != rule['dst_ip']:
-                    continue
+                matched_rule['ip_version'] = 'IPv4'
+                
+                # Verificar src_ip
+                if 'src_ip' in rule:
+                    if str(ip.srcip) != rule['src_ip']:
+                        continue
+                    matched_rule['src_ip'] = str(ip.srcip)
+                    if 'mask_src' in rule:
+                        matched_rule['mask_src'] = rule['mask_src']
+                
+                # Verificar dst_ip
+                if 'dst_ip' in rule:
+                    if str(ip.dstip) != rule['dst_ip']:
+                        continue
+                    matched_rule['dst_ip'] = str(ip.dstip)
+                    if 'mask_dst' in rule:
+                        matched_rule['mask_dst'] = rule['mask_dst']
 
-                # protocolo/puerto
-                proto = rule.get('protocol', '').upper()
-                if proto == 'ANY':
-                    # si dst_port especificado, requiere que exista tcp/udp y puerto coincida
+                # Verificar protocolo y puerto
+                if protocol == 'TCP':
+                    if tcp is None:
+                        continue
+                    matched_rule['protocol'] = 'TCP'
+                    
+                    if 'src_port' in rule:
+                        if tcp.srcport != int(rule['src_port']):
+                            continue
+                        matched_rule['src_port'] = tcp.srcport
+                        
                     if 'dst_port' in rule:
-                        if udp and udp.dstport == int(rule['dst_port']):
-                            return True
-                        if tcp and tcp.dstport == int(rule['dst_port']):
-                            return True
-                        # no coincidio => continue to next rule
+                        if tcp.dstport != int(rule['dst_port']):
+                            continue
+                        matched_rule['dst_port'] = tcp.dstport
+                        
+                elif protocol == 'UDP':
+                    if udp is None:
                         continue
-                    else:
-                        # ANY sin puerto + IP coincidió => bloquear
-                        return True
-                elif proto == 'TCP' and tcp is not None:
-                    if 'dst_port' in rule and tcp.dstport != int(rule['dst_port']):
+                    matched_rule['protocol'] = 'UDP'
+                    
+                    if 'src_port' in rule:
+                        if udp.srcport != int(rule['src_port']):
+                            continue
+                        matched_rule['src_port'] = udp.srcport
+                        
+                    if 'dst_port' in rule:
+                        if udp.dstport != int(rule['dst_port']):
+                            continue
+                        matched_rule['dst_port'] = udp.dstport
+                        
+                elif protocol == 'SCTP':  # ← AGREGAR ESTO
+                    if sctp is None:
                         continue
-                    return True
-                elif proto == 'UDP' and udp is not None:
-                    if 'dst_port' in rule and udp.dstport != int(rule['dst_port']):
+                    matched_rule['protocol'] = 'SCTP'
+                    
+                    if 'src_port' in rule:
+                        if sctp.srcport != int(rule['src_port']):
+                            continue
+                        matched_rule['src_port'] = sctp.srcport
+                        
+                    if 'dst_port' in rule:
+                        if sctp.dstport != int(rule['dst_port']):
+                            continue
+                        matched_rule['dst_port'] = sctp.dstport
+                    
+                elif protocol == 'ICMP':
+                    if icmp is None:  # ← AGREGAR ESTA VERIFICACIÓN
                         continue
-                    return True
-                # si la regla quiere TCP pero el paquete no es TCP -> no coincide
-            else:
-                # paquete no-ip: aún así podemos bloquear por MAC si regla lo especifica
-                # las reglas L3 no aplican a paquetes no-ip (como ARP)
-                pass
-
-        return False
+                    matched_rule['protocol'] = 'ICMP'
+            
+            # Si llegamos aquí, todos los campos matchearon
+            if matched_rule:
+                matched_rule['name'] = f"Dynamic DROP from rule: {rule.get('name', '<no-name>')}"
+                matched_rule['priority'] = PRIO_FIREWALL
+                log.debug("Packet blocked by rule: %s", rule.get("name", "<no-name>"))
+                return matched_rule
+        
+        return None
 
     def _handle_ConnectionUp(self, event):
         dpid = event.dpid
@@ -186,10 +281,13 @@ class Controller(EventMixin):
                 log.warning("Dropping: src y dst en el mismo puerto (%s)", in_port)
                 return
 
-            # Si el paquete sería bloqueado por alguna regla, NO instalamos flow
-            if self.packet_blocked_by_rule(packet):
-                log.info("Packet matches firewall rule — not installing learned flow for %s -> %s",
-                         packet.src, packet.dst)
+            blocked_rule = self.packet_blocked_by_rule(packet)
+
+            if blocked_rule:
+                log.info("Packet matches firewall rule — installing explicit DROP")
+                # Directamente usar install_rule()!
+                self.install_rule(blocked_rule, event.connection)
+                # NO enviar el paquete (drop)
                 return
 
             # Instalamos UN flow específico por par src+dst con prioridad baja

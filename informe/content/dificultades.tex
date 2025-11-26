@@ -1,0 +1,65 @@
+\section{Dificultades Encontradas y Soluciones}
+\label{sec:dificultades}
+
+\subsection{Configuración Inicial de la Topología}
+
+Una de las dificultades iniciales fue configurar correctamente la topología en Mininet con múltiples switches conectados en cascada y asegurar que todos estuvieran bajo el control de un único controlador remoto.
+
+\textbf{Problema:} Mininet por defecto crea switches con controladores internos. Se requería especificar el parámetro \texttt{--controller remote} para usar un controlador externo.
+
+\textbf{Solución:} Se utilizó el comando correcto:
+\begin{verbatim}
+sudo mn --custom topology.py --topo customTopo,num_switches=4 \
+  --controller remote --switch ovsk --mac --arp
+\end{verbatim}
+
+Se agregó la opción \texttt{--mac} para asignar direcciones MAC basadas en IP y \texttt{--arp} para habilitar ARP.
+
+\subsection{Aprendizaje de Direcciones MAC}
+
+El controlador debe aprender dinámicamente la topología observando PacketIn. Sin embargo, el aprendizaje incompleto causaba que algunos hosts no fuera alcanzables.
+
+\textbf{Problema:} Los primeros paquetes generaban PacketIn, pero si el controlador no procesaba rápidamente, se perdían paquetes y la topología quedaba incompleta.
+
+\textbf{Solución:} Se agregó un mecanismo de feedback: cada vez que se instala un flujo aprendido, se envía el paquete pendiente (\texttt{ofp\_packet\_out}) al destino, asegurando que no se pierda el paquete disparador del aprendizaje.
+
+\subsection{Conflictos entre Reglas Proactivas y Aprendidas}
+
+En el switch s2 (firewall), pueden coexistir reglas proactivas (de firewall) y reglas aprendidas (flujos dinámicos). Esto creó ambigüedad en cuál aplicar cuando un paquete coincide con múltiples reglas.
+
+\textbf{Problema:} Sin prioridades correctas, un flujo aprendido podría actuar antes que una regla de bloqueo.
+
+\textbf{Solución:} Se utilizaron prioridades distintas:
+\begin{itemize}
+    \item \textbf{Reglas proactivas (firewall):} Prioridad 10000
+    \item \textbf{Flujos aprendidos:} Prioridad 100
+\end{itemize}
+
+Las prioridades más altas se evalúan primero, asegurando que el firewall prevalezca.
+
+\subsection{Comportamiento de Flooding}
+
+El flooding por todos los puertos es necesario para descubrir destinos desconocidos, pero puede causar tormenta de paquetes en topologías con ciclos.
+
+\textbf{Problema:} En Mininet con topología lineal, el flooding no es problema, pero en redes complejas puede causar duplicación de paquetes.
+
+\textbf{Solución:} Se implementó verificación para evitar re-enviar paquetes por el puerto de entrada:
+\begin{verbatim}
+if out_port == in_port:
+    log.warning("Dropping: src y dst en el mismo puerto")
+    return
+\end{verbatim}
+
+\subsection{Depuración de OpenFlow}
+
+Entender qué ocurre en los switches es difícil sin herramientas de debugging.
+
+\textbf{Problema:} Los logs del controlador no siempre reflejaban exactamente el estado de los switches.
+
+\textbf{Solución:} Se utilizó \texttt{ovs-ofctl dump-flows} para consultar el contenido exacto de las tablas de flujos:
+\begin{verbatim}
+mininet> s1 ovs-ofctl dump-flows s1
+\end{verbatim}
+
+Esto proporcionaba una vista clara de qué reglas estaban instaladas y sus prioridades.
+

@@ -1,0 +1,99 @@
+\hypersetup{
+    pdfauthor={Camila General, Santiago	Vaccarelli, Federica Rodríguez Negri, Facundo Kresta y Ulises Nieva},
+    pdftitle={TP N◦1: File Transfer},
+    pdfsubject={Transferencia de archivos y protocolos de comunicación},
+    pdfkeywords={transferencia de archivos, protocolos, redes, comunicación, UDP, TCP, Stop and Wait, Selective Repeat}  
+}
+\linespread{1}
+\setlist[enumerate,1]{label=\arabic*., topsep=0pt}
+
+\pagestyle{fancy}
+\setlength{\headheight}{15pt}
+
+\addto\extrasspanish{%
+  \def\figureautorefname{Figura}%
+  \def\tableautorefname{Cuadro}%
+  \def\equationautorefname{Ecuación}%
+  \def\sectionautorefname{Sección}%
+  \def\subsectionautorefname{Subsección}%
+}
+
+\setlength{\tabcolsep}{16pt}
+
+\bibliographystyle{unsrt}
+
+\lhead{TP N°1: File Transfer}
+\rhead{Redes - FIUBA}
+\cfoot{\thepage}
+
+\definecolor{LightGray}{gray}{0.9}
+
+\lstset{
+    basicstyle=\ttfamily\small,       % Estilo básico del texto
+    frame=single,                     % Caja alrededor del texto
+    captionpos=b,                     % Posición del caption (abajo)
+    breaklines=true,                  % Permitir saltos de línea
+    showstringspaces=false            % No mostrar espacios en strings
+    showstringspaces=false,           % No mostrar espacios en strings
+    numbers=left,                     % Números de línea a la izquierda
+    numberstyle=\footnotesize,                % Estilo de los números de línea
+    stepnumber=1
+}
+
+
+% Entorno para bloques de código
+\lstnewenvironment{codelisting}[1][]{%
+    \refstepcounter{codelisting} % Incrementa el contador de codelisting
+    \lstset{
+        numbers=left,                     % Números de línea a la izquierda
+        numberstyle=\footnotesize,        % Estilo de los números de línea
+        basicstyle=\ttfamily\small,       % Estilo básico del texto
+        caption={Código \thecodelisting: ##1}, % Caption personalizado
+        label={code:\thecodelisting},     % Etiqueta para referencias
+        #1                                % Permitir opciones personalizadas
+    }
+}{}
+
+% Definimos un nuevo entorno flotante "log"
+\newfloat{log}{htbp}{lop}[section]
+\floatname{log}{Log}
+
+% Definimos un nuevo entorno flotante "secuencia"
+\newfloat{secuencia}{htbp}{lop}[section]
+\floatname{secuencia}{Secuencia}
+
+% Definimos un nuevo entorno flotante "secuencia"
+\newfloat{diagrama}{htbp}{lop}[section]
+\floatname{diagrama}{Diagrama}
+
+% % Definimos entorno Log con numeración por sección
+% \newtcolorbox[auto counter, number within=section]{logbox}[2][]{%
+%     enhanced,
+%     breakable,
+%     colback=white,
+%     colframe=black,
+%     fonttitle=\bfseries,
+%     title={Log~\thetcbcounter: #2},
+%     #1
+% }
+
+\lstdefinelanguage{json}{
+    basicstyle=\ttfamily\small,
+    showstringspaces=false,
+    breaklines=true,
+    frame=single,
+    string=[s]{"}{"},
+    comment=[l]{//},
+    morecomment=[s]{/*}{*/},
+    literate=
+     *{0}{{{\color{blue}0}}}{1}
+      {1}{{{\color{blue}1}}}{1}
+      {2}{{{\color{blue}2}}}{1}
+      {3}{{{\color{blue}3}}}{1}
+      {4}{{{\color{blue}4}}}{1}
+      {5}{{{\color{blue}5}}}{1}
+      {6}{{{\color{blue}6}}}{1}
+      {7}{{{\color{blue}7}}}{1}
+      {8}{{{\color{blue}8}}}{1}
+      {9}{{{\color{blue}9}}}{1}
+}

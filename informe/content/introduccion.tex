@@ -1,0 +1,36 @@
+\section{Introducción}
+\label{sec:introduccion}
+
+En la actualidad, las redes de computadoras han evolucionado significativamente hacia arquitecturas más flexibles y programables. Históricamente, los switches se han comportado como dispositivos estáticos, con lógica de encaminamiento fija implementada en hardware o firmware propietario. Sin embargo, el surgimiento de \textbf{Software-Defined Networking (SDN)} y el protocolo \textbf{OpenFlow} ha revolucionado la forma en que se controla y administra el comportamiento de la red.
+
+OpenFlow es un protocolo de comunicación abierto que permite que un controlador centralizado determine dinámicamente cómo los switches deben procesar y reenviar paquetes de datos. Esta separación entre el plano de datos (switches) y el plano de control (controlador) proporciona una mayor flexibilidad, simplificando la administración de redes y permitiendo la implementación de políticas de red complejas.
+
+El presente trabajo práctico implementa un \textbf{Firewall} utilizando OpenFlow 1.0 simplificado utilizando el framework \textbf{POX}, un controlador escrito en Python que proporciona una plataforma accesible para comprender los principios de SDN. Se desarrolló una topología de red personalizada en \textbf{Mininet} con múltiples switches conectados en cascada y hosts distribuidos, permitiendo experimentar con el comportamiento del plano de datos cuando es controlado por un controlador centralizado.
+
+Este informe detalla el diseño e implementación de la topología de red, la arquitectura del controlador POX, las funcionalidades desarrolladas, y los resultados obtenidos a través de diferentes escenarios de prueba. Se analizan aspectos como la comunicación entre controlador y switches, el aprendizaje de direcciones MAC, y el comportamiento de la red bajo diferentes cargas y condiciones.
+
+\subsection{Objetivos}
+Los objetivos principales de este trabajo son:
+\begin{itemize}
+    \item Comprender los fundamentos de \textbf{Software-Defined Networking (SDN)} y el protocolo \textbf{OpenFlow 1.0}.
+    
+    \item Implementar un \textbf{controlador SDN} utilizando el framework \textbf{POX} en Python, capaz de gestionar el comportamiento de switches virtuales.
+    
+    \item Diseñar y desplegar una \textbf{topología de red personalizada} en \textbf{Mininet} con múltiples switches conectados en cascada y hosts distribuidos.
+    
+    \item Desarrollar un \textbf{firewall proactivo} que instale reglas de filtrado al momento de conexión de los switches, bloqueando tráfico según:
+    \begin{itemize}
+        \item Direcciones MAC (capa 2)
+        \item Direcciones IP y protocolo ICMP (capa 3)
+        \item Protocolos de transporte: TCP, UDP y SCTP (capa 4)
+        \item Puertos de origen y destino
+    \end{itemize}
+    
+    \item Implementar un mecanismo de \textbf{aprendizaje de direcciones MAC} (MAC learning) para el reenvío inteligente de paquetes entre hosts.
+    
+    \item Diseñar un sistema de \textbf{reglas configurables} mediante archivos \texttt{JSON} que permitan especificar políticas de firewall sin modificar el código del controlador.
+    
+    \item Soportar la expansión automática de reglas genéricas (protocolo "ANY") en múltiples reglas específicas para cada protocolo de transporte.
+    
+    \item Implementar detección reactiva de paquetes bloqueados, instalando dinámicamente reglas DROP cuando un paquete llega al controlador y matchea con las políticas del firewall.
+\end{itemize}

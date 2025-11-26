@@ -1,0 +1,42 @@
+\section{Conclusión}
+\label{sec:conclusion}
+
+El presente trabajo ha demostrado exitosamente la implementación de un controlador OpenFlow utilizando POX para administrar una topología de red con múltiples switches. Los objetivos principales del trabajo practico fueron alcanzados:
+
+\subsection{Logros Principales}
+
+\begin{enumerate}
+    \item \textbf{Topología funcional:} Se implementó una topología lineal con 4 switches y 4 hosts distribuidos en Mininet.
+    \item \textbf{Controlador centralizado:} Se desarrolló un controlador POX que se conecta a los switches mediante OpenFlow 1.0.
+    \item \textbf{Aprendizaje dinámico:} El controlador aprende la topología de la red observando PacketIn y construye una tabla de MAC a puerto.
+    \item \textbf{Encaminamiento basado en flujos:} Se implementó instalación de flujos estáticos en switches que actúan como switches tradicionales (NORMAL behavior).
+    \item \textbf{Firewall de switch específico:} El switch s2 implementa reglas de bloqueo a nivel de MAC, IP y puertos desde un archivo JSON.
+    \item \textbf{Pruebas exitosas:} Se verificó conectividad completa entre hosts y se validó el funcionamiento del firewall.
+\end{enumerate}
+
+\subsection{Aprendizajes Clave}
+
+A través del desarrollo e implementación, se obtuvieron los siguientes aprendizajes:
+
+\begin{itemize}
+    \item \textbf{Separación de planos:} La separación del plano de control y datos simplifica significativamente la administración de redes.
+    \item \textbf{Ventajas de SDN:} Usar un controlador centralizado permitió implementar políticas complejas (firewall) sin cambios en el hardware de los switches.
+    \item \textbf{OpenFlow como abstracción:} OpenFlow proporciona una abstracción clara y programable del comportamiento de switches.
+    \item \textbf{Escalabilidad del controlador:} Un controlador simple es efectivo para topologías pequeñas, pero sería un cuello de botella en redes grandes.
+    \item \textbf{Importancia de prioridades:} La correcta asignación de prioridades en flujos es crítica para resolver conflictos entre reglas.
+\end{itemize}
+
+\subsection{Limitaciones}
+
+A pesar de los logros, el sistema actual presenta limitaciones:
+
+\begin{itemize}
+    \item \textbf{Punto único de fallo:} El controlador es un punto crítico de falla; su caída desconecta la red.
+    \item \textbf{Escalabilidad:} El aprendizaje ingenuista (per-switch) no escala a redes grandes con cientos de switches.
+    \item \textbf{Sin redundancia:} No hay mecanismo de failover si el controlador falla.
+    \item \textbf{OpenFlow 1.0 limitado:} Versiones posteriores de OpenFlow ofrecen características más avanzadas.
+\end{itemize}
+
+\subsection{Reflexión Final}
+
+Este trabajo práctico ha proporcionado una comprensión profunda de cómo funcionan las redes modernas basadas en SDN. La implementación práctica de un controlador OpenFlow, aunque simplificado, ilustra los principios fundamentales que subyacen a infraestructuras complejas en centros de datos e internet moderno. La programabilidad de la red abre posibilidades para innovación y optimización que no eran posibles con arquitecturas de networking tradicionales.

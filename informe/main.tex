@@ -1,0 +1,24 @@
+\documentclass{article}
+\input{utilities/packages.tex}
+\input{utilities/settings.tex}
+\input{utilities/macros.tex}
+
+\begin{document}
+
+\include{utilities/title.tex} 
+
+\begin{abstract}
+Este trabajo implementa un sistema de transferencia de archivos confiable sobre el protocolo UDP, desarrollando protocolos de aplicación que garantizan entrega ordenada y sin errores de los datos. Se implementaron dos esquemas de control de errores: \textbf{Stop and Wait} y \textbf{Selective Repeat}, permitiendo comparar diferentes aproximaciones a la problemática de la confiabilidad en redes de computadoras.
+\end{abstract}
+
+\tableofcontents 
+\include{content/introduccion.tex}
+\include{content/hipotesis.tex}
+\include{content/implementacion.tex}
+\include{content/pruebas.tex}
+\include{content/preguntas.tex}
+\include{content/dificultades.tex}
+\include{content/conclusion.tex}
+
+% \bibliography{utilities/referencias.bib}
+\end{document}

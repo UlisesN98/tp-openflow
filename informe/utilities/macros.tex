@@ -1,0 +1,43 @@
+\renewcommand{\footrulewidth}{0.4pt}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% Cambiar el nombre del caption para cada tipo
+\renewcommand{\lstlistingname}{Código}  % Para codelisting
+\newcommand{\loglistingname}{Log}       % Para loglisting
+\newcommand{\seclistingname}{Secuencia}       % Para loglisting
+\newcommand{\diaglistingname}{Diagrama}       % Para loglisting
+
+% Contador para bloques de código
+\newcounter{codelisting}[section]
+\renewcommand{\thecodelisting}{\thesection.\arabic{codelisting}}
+\newcommand{\listofcodelistings}{\section*{Lista de Códigos}\addcontentsline{toc}{section}{Lista de Códigos}\@starttoc{loc}}
+% Comando personalizado para incluir archivos externos como codelisting
+\newcommand{\includecodelisting}[4][]{%
+    \refstepcounter{codelisting} % Incrementa el contador de codelisting
+    \lstinputlisting[
+        #1, % Opciones adicionales
+        caption={Código \thecodelisting: #2}, % Caption personalizado
+        label={code:\thecodelisting}, % Etiqueta para referencias
+        firstline=#3, % Primera línea del fragmento
+        lastline=#4   % Última línea del fragmento
+    ]{#1} % Ruta del archivo
+}
+
+% Contador para bloques de logs
+\newcounter{loglisting}[section]
+\renewcommand{\theloglisting}{\thesection.\arabic{loglisting}}
+\newcommand{\listofloglistings}{\section*{Lista de Logs}\addcontentsline{toc}{section}{Lista de Logs}\@starttoc{lol}}
+
+% Contador para bloques de secuencia
+\newcounter{seclisting}[section]
+\renewcommand{\theseclisting}{\thesection.\arabic{seclisting}}
+\newcommand{\listofseclistings}{\section*{Lista de Secuencias}\addcontentsline{toc}{section}{Lista de Secuencias}\@starttoc{los}}
+
+% Contador para bloques de secuencia
+\newcounter{diaglisting}[section]
+\renewcommand{\thediaglisting}{\thesection.\arabic{diaglisting}}
+\newcommand{\listofdiaglistings}{\section*{Lista de Diagramas}\addcontentsline{toc}{section}{Lista de Diagramas}\@starttoc{lod}}
+
+\newcommand{\logautorefname}{Log}
+\newcommand{\secuenciaautorefname}{Secuencia}
+\newcommand{\diagramaautorefname}{Diagrama}
