@@ -13,7 +13,7 @@ sudo mn --custom topology.py --topo customTopo,num_switches=4 \
   --controller remote --switch ovsk --mac --arp
 \end{verbatim}
 
-Se agregó la opción \texttt{--mac} para asignar direcciones MAC basadas en IP y \texttt{--arp} para habilitar ARP.
+Se agregó la opción \texttt{--mac} para asignar direcciones \texttt{MAC} basadas en \texttt{IP} y \texttt{--arp} para habilitar \texttt{ARP}.
 
 \subsection{Aprendizaje de Direcciones MAC}
 
@@ -25,7 +25,7 @@ El controlador debe aprender dinámicamente la topología observando PacketIn. S
 
 \subsection{Conflictos entre Reglas Proactivas y Aprendidas}
 
-En el switch s2 (firewall), pueden coexistir reglas proactivas (de firewall) y reglas aprendidas (flujos dinámicos). Esto creó ambigüedad en cuál aplicar cuando un paquete coincide con múltiples reglas.
+En el switch \texttt{s2} (firewall), pueden coexistir reglas proactivas (de firewall) y reglas aprendidas (flujos dinámicos). Esto creó ambigüedad en cuál aplicar cuando un paquete coincide con múltiples reglas.
 
 \textbf{Problema:} Sin prioridades correctas, un flujo aprendido podría actuar antes que una regla de bloqueo.
 

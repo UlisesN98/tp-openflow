@@ -3,14 +3,14 @@
 
 \subsection{Diseño General del Sistema}
 
-El sistema implementa una arquitectura SDN basada en el paradigma de separación entre el plano de control y el plano de datos. El controlador POX, ejecutándose en Python, actúa como cerebro centralizado que gestiona el comportamiento de los switches mediante el protocolo OpenFlow 1.0.
+El sistema implementa una arquitectura SDN basada en el paradigma de separación entre el plano de control y el plano de datos. El controlador POX, ejecutándose en \texttt{Python}, actúa como cerebro centralizado que gestiona el comportamiento de los switches mediante el protocolo OpenFlow 1.0.
 
 La arquitectura sigue el modelo clásico de SDN de tres capas:
 
 \begin{enumerate}
-    \item \textbf{Capa de Aplicación:} Políticas de firewall definidas en formato JSON que especifican qué tráfico debe ser bloqueado.
+    \item \textbf{Capa de Aplicación:} Políticas de firewall definidas en formato \texttt{JSON} que especifican qué tráfico debe ser bloqueado.
     \item \textbf{Plano de Control:} Controlador POX que procesa eventos de la red (PacketIn, ConnectionUp) y calcula las reglas de flujo a instalar.
-    \item \textbf{Plano de Datos:} Switches Open vSwitch que ejecutan las reglas instaladas y reenvían paquetes según la tabla de flujos.
+    \item \textbf{Plano de Datos:} \textbf{Switches Open vSwitch}\cite{openvswitch} que ejecutan las reglas instaladas y reenvían paquetes según la tabla de flujos.
 \end{enumerate}
 
 \begin{diagrama}
@@ -54,7 +54,7 @@ El controlador opera en dos modos complementarios:
 \begin{itemize}
     \item \textbf{Modo proactivo:} Al detectar la conexión de un switch (evento ConnectionUp), el controlador instala inmediatamente todas las reglas de firewall definidas en el archivo de configuración. Esto minimiza la latencia de filtrado, ya que los paquetes bloqueados nunca llegan al controlador.
     
-    \item \textbf{Modo reactivo:} Cuando un paquete desconocido llega al controlador (evento PacketIn), el sistema verifica si debe ser bloqueado según las políticas. Si matchea una regla de firewall, se instala dinámicamente una regla DROP. Esto busca generar una redundancia por algún posible fallo ya sea en la aplicación de las reglas proactivas o en el switch en sí. Si no está bloqueado, se aplica MAC learning para optimizar el reenvío futuro.
+    \item \textbf{Modo reactivo:} Cuando un paquete desconocido llega al controlador (evento PacketIn), el sistema verifica si debe ser bloqueado según las políticas. Si matchea una regla de firewall, se instala dinámicamente una regla DROP. Esto busca generar una redundancia por algún posible fallo ya sea en la aplicación de las reglas proactivas o en el switch en sí. Si no está bloqueado, se aplica \texttt{MAC} learning para optimizar el reenvío futuro.
 \end{itemize}
 
 \subsection{Topología de Red}
@@ -70,8 +70,8 @@ La topología implementada consiste en múltiples switches conectados en cascada
     +-------+       +-------+       +-------+       +-------+
     |  s1   |-------|  s2   |-------|  s3   |-------|  s4   |
     +-------+       +-------+       +-------+       +-------+
-        |                              
-        +------------------------+
+                        |               
+                        +--------+
                                  |
                            Controlador POX
 \end{verbatim}
@@ -81,7 +81,7 @@ La topología implementada consiste en múltiples switches conectados en cascada
 \label{diag:topologia}
 \end{diagrama}
 
-La topología se implementa mediante el script \texttt{topology.py} utilizando la API de Mininet. Cada switch tiene un DPID (DataPath ID) único, siendo el switch \texttt{s1} (DPID \texttt{00-00-00-00-00-01}) el designado para aplicar las reglas de firewall.
+La topología se implementa mediante el script \texttt{topology.py} utilizando la \texttt{API} de Mininet. Cada switch tiene un \texttt{DPID} (DataPath ID) único, siendo el switch \texttt{s2} (\texttt{DPID 00-00-00-00-00-02}) el designado para aplicar las reglas de firewall.
 
 \subsection{Formato de Paquetes OpenFlow}
 
@@ -124,20 +124,20 @@ Mensaje enviado por el controlador para instalar, modificar o eliminar reglas en
 Los campos más importantes son:
 
 \begin{itemize}
-    \item \textbf{Match Fields:} Especifican los criterios de matching (direcciones MAC/IP, protocolos, puertos).
+    \item \textbf{Match Fields:} Especifican los criterios de matching (direcciones \texttt{MAC/}IP, protocolos, puertos).
     \item \textbf{Priority:} Define la precedencia de la regla. El sistema usa prioridad 10000 para firewall y 100 para forwarding.
-    \item \textbf{Actions:} Indican qué hacer con los paquetes que matchean. Para firewall, la lista de acciones está vacía (DROP implícito).
+    \item \textbf{Actions:} Indican qué hacer con los paquetes que matchean. Para firewall, la lista de acciones está vacía (\texttt{DROP} implícito).
 \end{itemize}
 
 \subsubsection{PacketIn}
 
 Mensaje enviado por el switch al controlador cuando un paquete no matchea ninguna regla instalada.
 
-\begin{diagrama}
+\begin{secuencia}
 \begin{center}
 \begin{minipage}{0.5\textwidth}
 \begin{verbatim}
-Switch (s1)                     Controlador POX
+Switch (s2)                     Controlador POX
     |                                 |
     |  PacketIn (buffer_id, data)     |
     | ------------------------------> |
@@ -154,7 +154,7 @@ Switch (s1)                     Controlador POX
 \end{center}
 \caption{Interacción PacketIn/FlowMod/PacketOut}
 \label{diag:packet_in_flow}
-\end{diagrama}
+\end{secuencia}
 
 \subsection{Estructura del Código}
 
@@ -164,23 +164,23 @@ El sistema está organizado en módulos Python con responsabilidades claramente 
     \item \texttt{controller.py}: Módulo principal del controlador SDN. Contiene:
     \begin{itemize}
         \item Clase \texttt{Controller}: Gestiona eventos de OpenFlow
-        \item \texttt{get\_rules()}: Carga y expande reglas desde JSON
+        \item \texttt{get\_rules()}: Carga y expande reglas desde \texttt{JSON}
         \item \texttt{install\_rule()}: Instala reglas de firewall en switches
         \item \texttt{packet\_blocked\_by\_rule()}: Verifica si un paquete debe ser bloqueado
         \item \texttt{\_handle\_ConnectionUp()}: Maneja conexión de nuevos switches
         \item \texttt{\_handle\_PacketIn()}: Procesa paquetes desconocidos
     \end{itemize}
     
-    \item \texttt{rules.json}: Archivo de configuración con políticas de firewall en formato JSON. Define reglas de bloqueo por MAC, IP, protocolo y puerto.
+    \item \texttt{rules.json}: Archivo de configuración con políticas de firewall en formato \texttt{JSON}. Define reglas de bloqueo por \texttt{MAC}, \texttt{IP,} protocolo y puerto.
     
     \item \texttt{topology.py}: Define la topología de red mediante Mininet. que crea switches en cascada y distribuye hosts.
 \end{itemize}
 
 \subsection{Formato de Reglas de Firewall}
 
-Las políticas de seguridad se definen mediante un archivo JSON con la siguiente estructura:
+Las políticas de seguridad se definen mediante un archivo \texttt{JSON}\cite{json_format} con la siguiente estructura:
 
-\begin{lstlisting}[language=json, caption={Ejemplo de archivo rules.json}, label={lst:rules_json}]
+\begin{lstlisting}[language=json, caption={Ejemplo de archivo \texttt{rules.json}}, label={lst:rules_json}]
 [
     {
         "name": "Block port 80",
@@ -209,21 +209,21 @@ Las políticas de seguridad se definen mediante un archivo JSON con la siguiente
 Cada regla puede contener los siguientes campos:
 
 \begin{description}
-    \item[\texttt{name}] (string): Descripción legible de la regla
-    \item[\texttt{protocol}] (string): Protocolo de transporte (``TCP", ``UDP", ``SCTP", ``ICMP" \footnote{Si bien ICMP no es como tal un protocolo de transporte, se lo pone acá, ya que es la forma que tiene OpenFlow y POX para distingirlo con \texttt{nw\_proto}}, ``ANY")
-    \item[\texttt{src\_mac}] (string): Dirección MAC origen (formato XX:XX:XX:XX:XX:XX)
-    \item[\texttt{dst\_mac}] (string): Dirección MAC destino
-    \item[\texttt{src\_ip}] (string): Dirección IPv4 origen
-    \item[\texttt{dst\_ip}] (string): Dirección IPv4 destino
-    \item[\texttt{mask\_src}] (int): Máscara de subred para IP origen (CIDR)
-    \item[\texttt{mask\_dst}] (int): Máscara de subred para IP destino (CIDR)
-    \item[\texttt{src\_port}] (int): Puerto origen (para TCP/UDP/SCTP)
-    \item[\texttt{dst\_port}] (int): Puerto destino (para TCP/UDP/SCTP)
+    \item[\texttt{name}] (\texttt{string}): Descripción legible de la regla
+    \item[\texttt{protocol}] (\texttt{string}): Protocolo de transporte (``\texttt{TCP}", ``\texttt{UDP}", ``\texttt{SCTP}", ``\texttt{ICMP}" \footnote{Si bien \texttt{ICMP} no es como tal un protocolo de transporte, se lo pone acá, ya que es la forma que tiene OpenFlow y POX para distingirlo con \texttt{nw\_proto}}, ``\texttt{ANY}")
+    \item[\texttt{src\_mac}] (\texttt{string}): Dirección \texttt{MAC} origen (formato XX:XX:XX:XX:XX:XX)
+    \item[\texttt{dst\_mac}] (\texttt{string}): Dirección \texttt{MAC} destino
+    \item[\texttt{src\_ip}] (\texttt{string}): Dirección \texttt{IPv4} origen
+    \item[\texttt{dst\_ip}] (\texttt{string}): Dirección \texttt{IPv4} destino
+    \item[\texttt{mask\_src}] (\texttt{int}): Máscara de subred para \texttt{IP} origen (CIDR)\cite{aws_cidr}
+    \item[\texttt{mask\_dst}] (\texttt{int}): Máscara de subred para \texttt{IP} destino (CIDR)
+    \item[\texttt{src\_port}] (\texttt{int}): Puerto origen (para \texttt{TCP/UDP/SCTP})
+    \item[\texttt{dst\_port}] (\texttt{int}): Puerto destino (para \texttt{TCP/UDP/SCTP})
 \end{description}
 
 \subsubsection{Expansión de Reglas Genéricas}
 
-Las reglas con \texttt{protocol: "ANY"} que especifican puertos se expanden automáticamente en múltiples reglas específicas:
+Las reglas con \texttt{protocol:} ``\texttt{ANY}" que especifican puertos se expanden automáticamente en múltiples reglas específicas:
 
 \begin{equation}
 \text{Regla}(\text{protocol} = \text{`ANY'}, \text{dst\_port} = p) \Rightarrow 
@@ -234,12 +234,12 @@ Las reglas con \texttt{protocol: "ANY"} que especifican puertos se expanden auto
 \end{cases}
 \end{equation}
 
-Ejemplo: La regla \texttt{Block port 80} con protocolo ``ANY" genera tres reglas:
+Ejemplo: La regla \texttt{Block port 80} con protocolo ``\texttt{ANY}" genera tres reglas:
 
 \begin{enumerate}
-    \item \texttt{Block port 80} (TCP)
-    \item \texttt{Block port 80} (UDP)
-    \item \texttt{Block port 80} (SCTP)
+    \item \texttt{Block port 80} (\texttt{TCP})
+    \item \texttt{Block port 80} (\texttt{UDP})
+    \item \texttt{Block port 80} (\texttt{SCTP})
 \end{enumerate}
 
 \subsection{Flujo de Operación del Sistema}
@@ -250,11 +250,11 @@ Cuando el controlador POX se inicia, ejecuta la siguiente secuencia:
 
 \begin{enumerate}
     \item Cargar y parsear el archivo \texttt{rules.json}
-    \item Expandir reglas genéricas (protocol=``ANY") en reglas específicas
+    \item Expandir reglas genéricas (\texttt{protocol:} ``\texttt{ANY}") en reglas específicas
     \item Inicializar estructuras de datos:
     \begin{itemize}
         \item \texttt{self.rules}: Lista de reglas de firewall expandidas
-        \item \texttt{self.mac\_to\_port}: Diccionario para MAC learning por switch
+        \item \texttt{self.mac\_to\_port}: Diccionario para \texttt{MAC} learning por switch
     \end{itemize}
     \item Registrar handlers para eventos OpenFlow:
     \begin{itemize}
@@ -263,7 +263,7 @@ Cuando el controlador POX se inicia, ejecuta la siguiente secuencia:
     \end{itemize}
 \end{enumerate}
 
-\begin{diagrama}
+\begin{secuencia}
 \begin{center}
 \begin{minipage}{0.3\textwidth}
 \begin{verbatim}
@@ -282,7 +282,7 @@ Controlador POX
 \end{center}
 \caption{Fase de inicialización del controlador}
 \label{diag:init_flow}
-\end{diagrama}
+\end{secuencia}
 
 \subsubsection{Conexión de Switch (ConnectionUp)}
 
@@ -331,11 +331,19 @@ def _handle_ConnectionUp(event):
         log.info("Reglas instaladas en %s", dpid_str)
 \end{lstlisting}
 
+\textbf{Nota importante:} La constante \texttt{FIREWALL\_SWITCH} está definida en el código del controlador como:
+
+\begin{lstlisting}[language=Python]
+FIREWALL_SWITCH = "00-00-00-00-00-02"  # Switch s2
+\end{lstlisting}
+
+Esto garantiza que las reglas de firewall solo se instalen en el switch designado (\texttt{s2}), mientras que los demás switches (\texttt{s1}, \texttt{s3}, \texttt{s4}) operan únicamente con \texttt{MAC} learning y forwarding.
+
 \subsubsection{Procesamiento de Paquetes (PacketIn)}
 
 Cuando un paquete desconocido llega al controlador, se ejecuta la siguiente lógica de decisión:
 
-\begin{diagrama}
+\begin{secuencia}
 \begin{center}
 \begin{minipage}{0.6\textwidth}
 \begin{verbatim}
@@ -368,7 +376,7 @@ PacketIn recibido
 \end{center}
 \caption{Árbol de decisión para PacketIn}
 \label{diag:packet_in_decision}
-\end{diagrama}
+\end{secuencia}
 
 \begin{secuencia}[H]
 \begin{center}
@@ -422,7 +430,7 @@ Host (h2)       Switch (s2)       Controlador POX
 \end{verbatim}
 \end{minipage}
 \end{center}
-\caption{Aprendizaje MAC y forwarding de paquete permitido}
+\caption{Aprendizaje \texttt{MAC} y forwarding de paquete permitido}
 \label{seq:packet_forwarded}
 \end{secuencia}
 
@@ -430,7 +438,7 @@ Host (h2)       Switch (s2)       Controlador POX
 
 \subsubsection{Instalación de Reglas (install\_rule)}
 
-La función \texttt{install\_rule()} traduce una regla de firewall en formato JSON a un mensaje FlowMod de OpenFlow:
+La función \texttt{install\_rule()} traduce una regla de firewall en formato \texttt{JSON} a un mensaje FlowMod de OpenFlow:
 
 \begin{lstlisting}[language=Python, caption={Función install\_rule simplificada}, label={lst:install_rule}]
 def install_rule(self, rule, connection):
@@ -532,15 +540,15 @@ def packet_blocked_by_rule(self, packet):
 El sistema implementa diversos mecanismos para garantizar operación robusta:
 
 \begin{itemize}
-    \item \textbf{Validación de reglas:} El archivo JSON se valida al cargar. Reglas inválidas se ignoran con warning en los logs.
+    \item \textbf{Validación de reglas:} El archivo \texttt{JSON} se valida al cargar. Reglas inválidas se ignoran con warning en los logs.
     
     \item \textbf{Manejo de switches desconectados:} Si un switch pierde conexión, las reglas instaladas persisten. Al reconectar, se reinstalan todas las reglas proactivamente.
     
     \item \textbf{Prioridades jerárquicas:} El sistema de prioridades garantiza que las reglas de firewall (10000) siempre tengan precedencia sobre reglas de forwarding (100), evitando bypass accidental.
     
-    \item \textbf{Detección de duplicados:} El mecanismo de MAC learning actualiza la tabla solo cuando aprende nueva información, evitando instalaciones redundantes.
+    \item \textbf{Detección de duplicados:} El mecanismo de \texttt{MAC} learning actualiza la tabla solo cuando aprende nueva información, evitando instalaciones redundantes.
     
-    \item \textbf{Logging multinivel:} El sistema registra eventos a nivel INFO (operaciones principales), DEBUG (detalles de matching) y WARNING (errores no críticos).
+    \item \textbf{Logging multinivel:} El sistema registra eventos a nivel \texttt{INFO} (operaciones principales), \texttt{DEBUG} (detalles de matching) y \texttt{WARNING} (errores no críticos).
 \end{itemize}
 
 \subsection{Configuración y Ejecución}
@@ -552,7 +560,7 @@ cd pox/
 ./pox.py misc.controller
 \end{Verbatim}
 
-Para modo verbose con logging DEBUG:
+Para modo verbose con logging \texttt{DEBUG}:
 
 \begin{Verbatim}
 ./pox.py log.level --DEBUG misc.controller
@@ -572,13 +580,13 @@ Parámetros utilizados:
     \item[\texttt{--topo}] Define la topología (customTopo con 4 switches)
     \item[\texttt{--controller remote}] Usa controlador externo (POX)
     \item[\texttt{--switch ovsk}] Utiliza Open vSwitch con soporte OpenFlow
-    \item[\texttt{--mac}] Asigna MACs secuenciales (00:00:00:00:00:01, ...)
-    \item[\texttt{--arp}] Pre-popula tabla ARP para evitar broadcasts
+    \item[\texttt{--mac}] Asigna \texttt{MAC}s secuenciales (\texttt{00:00:00:00:00:01}, ...)
+    \item[\texttt{--arp}] Pre-popula tabla \texttt{ARP} para evitar broadcasts
 \end{description}
 
 \subsubsection{Verificar Flows Instalados}
 
-Para inspeccionar las reglas activas en un switch:
+Para inspeccionar las reglas activas en un switch usando \texttt{ovs-ofctl}\cite{ovs_ofctl}:
 
 \begin{Verbatim}
 mininet> sh ovs-ofctl dump-flows s2
@@ -586,7 +594,10 @@ mininet> sh ovs-ofctl dump-flows s2
 
 Salida esperada:
 
-\begin{Verbatim}
+\begin{log}
+\begin{Sbox}
+\begin{minipage}{0.95\linewidth}
+\begin{verbatim}
 priority=10000,tcp,tp_dst=80 actions=drop
 priority=10000,udp,tp_dst=80 actions=drop
 priority=10000,sctp,tp_dst=80 actions=drop
@@ -594,13 +605,19 @@ priority=10000,udp,nw_src=10.0.0.1,tp_dst=5001 actions=drop
 priority=10000,dl_src=00:00:00:00:00:01,dl_dst=00:00:00:00:00:03 actions=drop
 priority=10000,dl_src=00:00:00:00:00:03,dl_dst=00:00:00:00:00:01 actions=drop
 priority=100,dl_src=00:00:00:00:00:02,dl_dst=00:00:00:00:00:04 actions=output:2
-\end{Verbatim}
+\end{verbatim}
+\end{minipage}
+\end{Sbox}
+\fbox{\TheSbox}
+\caption{Flows instalados en el switch s2}
+\label{lab:flows_instalados}
+\end{log}
 
 \subsection{Monitoreo y Debugging}
 
 \subsubsection{Captura de Tráfico con Wireshark}
 
-Para analizar el tráfico OpenFlow entre controlador y switch:
+Para analizar el tráfico OpenFlow entre controlador y switch usando Wireshark\cite{wireshark}:
 
 \begin{Verbatim}
 sudo wireshark -i lo -f "tcp port 6653" &
@@ -615,8 +632,8 @@ sudo wireshark -i s2-eth1 &
 Filtros útiles:
 \begin{itemize}
     \item \texttt{openflow\_v1}: Ver solo mensajes OpenFlow 1.0
-    \item \texttt{tcp.port == 80}: Ver tráfico HTTP bloqueado
-    \item \texttt{udp.port == 5001}: Ver tráfico UDP específico
+    \item \texttt{tcp.port == 80}: Ver tráfico \texttt{HTTP} bloqueado
+    \item \texttt{udp.port == 5001}: Ver tráfico \texttt{UDP} específico
     \item \texttt{eth.src == 00:00:00:00:00:01}: Tráfico desde h1
 \end{itemize}
 
@@ -624,7 +641,10 @@ Filtros útiles:
 
 El controlador POX genera logs detallados que facilitan el debugging:
 
-\begin{Verbatim}
+\begin{log}
+\begin{Sbox}
+\begin{minipage}{0.95\linewidth}
+\begin{verbatim}
 INFO:misc.controller:Controller Init
 INFO:misc.controller:Loaded rules from pox/misc/rules.json
 INFO:misc.controller:Expanded 4 rules to 7 rules
@@ -633,9 +653,15 @@ INFO:misc.controller:Firewall rule installed: Block port 80 (TCP) (priority=1000
 INFO:misc.controller:Firewall rule installed: Block port 80 (UDP) (priority=10000)
 INFO:misc.controller:Firewall rule installed: Block port 80 (SCTP) (priority=10000)
 INFO:misc.controller:Firewall rules installed on 00-00-00-00-00-02
-\end{Verbatim}
+\end{verbatim}
+\end{minipage}
+\end{Sbox}
+\fbox{\TheSbox}
+\caption{Logs de inicialización e instalación de reglas}
+\label{lab:logs_init}
+\end{log}
 
-Para debugging avanzado, activar nivel DEBUG:
+Para debugging avanzado, activar nivel \texttt{DEBUG}:
 
 \begin{Verbatim}
 ./pox.py log.level --DEBUG misc.controller
@@ -645,6 +671,6 @@ Esto muestra información adicional:
 \begin{itemize}
     \item Detalles de cada PacketIn recibido
     \item Matching de paquetes contra reglas
-    \item Decisiones de forwarding y MAC learning
+    \item Decisiones de forwarding y \texttt{MAC} learning
     \item Instalación de flows reactivos
 \end{itemize}

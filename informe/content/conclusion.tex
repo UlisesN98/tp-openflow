@@ -8,9 +8,9 @@ El presente trabajo ha demostrado exitosamente la implementación de un controla
 \begin{enumerate}
     \item \textbf{Topología funcional:} Se implementó una topología lineal con 4 switches y 4 hosts distribuidos en Mininet.
     \item \textbf{Controlador centralizado:} Se desarrolló un controlador POX que se conecta a los switches mediante OpenFlow 1.0.
-    \item \textbf{Aprendizaje dinámico:} El controlador aprende la topología de la red observando PacketIn y construye una tabla de MAC a puerto.
-    \item \textbf{Encaminamiento basado en flujos:} Se implementó instalación de flujos estáticos en switches que actúan como switches tradicionales (NORMAL behavior).
-    \item \textbf{Firewall de switch específico:} El switch s2 implementa reglas de bloqueo a nivel de MAC, IP y puertos desde un archivo JSON.
+    \item \textbf{Aprendizaje dinámico:} El controlador aprende la topología de la red observando PacketIn y construye una tabla de \texttt{MAC} a puerto.
+    \item \textbf{Encaminamiento basado en flujos:} Se implementó instalación de flujos estáticos en switches que actúan como switches tradicionales (\texttt{NORMAL} behavior).
+    \item \textbf{Firewall de switch específico:} El switch s2 implementa reglas de bloqueo a nivel de \texttt{MAC}, \texttt{IP} y puertos desde un archivo \texttt{JSON}.
     \item \textbf{Pruebas exitosas:} Se verificó conectividad completa entre hosts y se validó el funcionamiento del firewall.
 \end{enumerate}
 
@@ -32,7 +32,7 @@ A pesar de los logros, el sistema actual presenta limitaciones:
 
 \begin{itemize}
     \item \textbf{Punto único de fallo:} El controlador es un punto crítico de falla; su caída desconecta la red.
-    \item \textbf{Escalabilidad:} El aprendizaje ingenuista (per-switch) no escala a redes grandes con cientos de switches.
+    \item \textbf{Escalabilidad:} El aprendizaje (per-switch) no escala a redes grandes con cientos de switches.
     \item \textbf{Sin redundancia:} No hay mecanismo de failover si el controlador falla.
     \item \textbf{OpenFlow 1.0 limitado:} Versiones posteriores de OpenFlow ofrecen características más avanzadas.
 \end{itemize}

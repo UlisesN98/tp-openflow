@@ -2,7 +2,7 @@
 
 \subsection{Hipótesis Principal}
 
-La hipótesis principal de este trabajo es que es posible implementar un sistema de firewall centralizado y dinámico mediante el paradigma de Software-Defined Networking (SDN) utilizando el protocolo OpenFlow 1.0. Este enfoque permite la gestión unificada de políticas de seguridad a través de un controlador que instala reglas de filtrado en los switches de forma proactiva y reactiva, ofreciendo mayor flexibilidad y simplicidad en comparación con firewalls tradicionales distribuidos.
+La hipótesis principal de este trabajo es que es posible implementar un sistema de firewall centralizado y dinámico mediante el paradigma de Software-Defined Networking (SDN) utilizando el protocolo \textbf{OpenFlow 1.0}\cite{openflow10}. Este enfoque permite la gestión unificada de políticas de seguridad a través de un controlador que instala reglas de filtrado en los switches de forma proactiva y reactiva, ofreciendo mayor flexibilidad y simplicidad en comparación con firewalls tradicionales distribuidos.
 
 Se espera que el controlador pueda:
 \begin{itemize}
@@ -16,21 +16,21 @@ Se espera que el controlador pueda:
 Para el desarrollo e implementación del sistema, se han realizado las siguientes suposiciones técnicas:
 
 \begin{itemize}
-    \item \textbf{Protocolo OpenFlow:} Se asume el uso de OpenFlow 1.0, que soporta matching de paquetes en capas 2, 3 y 4 (direcciones MAC, IP, protocolos de transporte y puertos).
+    \item \textbf{Protocolo OpenFlow:} Se asume el uso de OpenFlow 1.0, que soporta matching de paquetes en capas 2, 3 y 4 (direcciones \texttt{MAC}, \texttt{IP}, protocolos de transporte y puertos).
     
     \item \textbf{Conectividad controlador-switch:} Se asume que la conexión entre el controlador POX y los switches es estable y con latencia baja (entorno de red local). No se consideran escenarios de pérdida de conexión prolongada entre el controlador y el plano de datos.
     
-    \item \textbf{Comunicación confiable controlador-switch:} Se asume que la comunicación entre el controlador POX y los switches es confiable mediante el protocolo TCP/SSL, sin pérdida de mensajes de control.
+    \item \textbf{Comunicación confiable controlador-switch:} Se asume que la comunicación entre el controlador POX y los switches es confiable mediante el protocolo \texttt{TCP/SSL}\cite{tcp_ssl}, sin pérdida de mensajes de control.
     
-    \item \textbf{Capacidad de los switches:} Se supone que los switches virtuales (Open vSwitch) tienen capacidad suficiente para almacenar las reglas de firewall y forwarding sin saturar sus tablas de flujos.
+    \item \textbf{Capacidad de los switches:} Se supone que los switches virtuale tienen capacidad suficiente para almacenar las reglas de firewall y forwarding sin saturar sus tablas de flujos.
     
     \item \textbf{Topología estática:} Se asume que la topología de red (número de switches y sus interconexiones) permanece constante durante la ejecución del sistema. No se consideran cambios dinámicos en la topología ni fallas de enlaces.
     
-    \item \textbf{Protocolos soportados:} El firewall está diseñado para filtrar únicamente tráfico IPv4. Los protocolos de transporte soportados son TCP, UDP, SCTP e ICMP. No se considera soporte para IPv6, ARP filtering avanzado, ni otros protocolos de capa superior.
+    \item \textbf{Protocolos soportados:} El firewall está diseñado para filtrar únicamente tráfico \texttt{IPv4}. Los protocolos con soporte completo de puertos son \texttt{TCP} y \texttt{UDP}. También se soporta \texttt{ICMP} (sin puertos) y \texttt{SCTP} (solo a nivel de protocolo, sin matching de puertos debido a limitaciones de OpenFlow 1.0). No se considera soporte para \texttt{IPv6}\cite{ipv6_rfc}, \texttt{ARP}\cite{arp_rfc} filtering avanzado, ni otros protocolos de capa superior.
     
-    \item \textbf{Unicidad de direcciones MAC:} Se asume que cada host tiene una dirección MAC única en la red, permitiendo que el mecanismo de MAC learning funcione correctamente sin conflictos.
+    \item \textbf{Unicidad de direcciones \texttt{MAC}:} Se asume que cada host tiene una dirección \texttt{MAC} única en la red, permitiendo que el mecanismo de \texttt{MAC} learning funcione correctamente sin conflictos.
     
-    \item \textbf{Sin NAT ni VLAN:} Se supone un esquema de direccionamiento plano sin traducción de direcciones de red (NAT) ni segmentación mediante VLANs, simplificando la lógica de matching de paquetes.
+    \item \textbf{Sin NAT ni VLAN:} Se supone un esquema de direccionamiento plano sin traducción de direcciones de red (\texttt{NAT}) ni segmentación mediante VLANs, simplificando la lógica de matching de paquetes.
 \end{itemize}
 
 \subsection{Decisiones de Diseño}
@@ -45,32 +45,38 @@ Durante el diseño del sistema, se tomaron las siguientes decisiones clave para 
     \end{itemize}
     Esto garantiza que las políticas de seguridad siempre tienen precedencia sobre las reglas de reenvío.
     
-    \item \textbf{Switch de firewall dedicado:} Se designó un switch específico (DPID \texttt{00-00-00-00-00-02}) como punto de aplicación de las reglas de firewall. Esta decisión centraliza el filtrado y simplifica el debugging y monitoreo de políticas de seguridad.
+    \item \textbf{Switch de firewall dedicado:} Se designó el switch \texttt{s2} (\texttt{DPID 00-00-00-00-00-02}) como único punto de aplicación de las reglas de firewall. Los switches \texttt{s1}, \texttt{s3} y \texttt{s4} (o m) operan exclusivamente en modo de aprendizaje \texttt{MAC} y forwarding. Esta decisión:
+    \begin{itemize}
+        \item Centraliza el filtrado en un punto estratégico de la topología
+        \item Simplifica el debugging (todas las reglas están en un solo switch)
+        \item Permite monitoreo eficiente de políticas de seguridad
+        \item Reduce overhead en switches que solo hacen forwarding
+    \end{itemize}
     
-    \item \textbf{Expansión de reglas genéricas:} Las reglas con protocolo ``\texttt{ANY}'' que especifican puertos se expanden automáticamente a múltiples reglas específicas (TCP, UDP, SCTP). Esto permite:
+    \item \textbf{Expansión de reglas genéricas:} Las reglas con protocolo ``\texttt{ANY}" que especifican puertos se expanden automáticamente a múltiples reglas específicas (\texttt{TCP}, \texttt{UDP}, \texttt{SCTP}). Esto permite:
     \begin{align*}
-        \text{Regla: } & \texttt{\{\text{protocol: ``ANY'', dst\_port: 80}\}} \\
+        \text{Regla: } & \texttt{\{\text{protocol: `ANY', dst\_port: 80}\}} \\
         \text{Se expande a: } & \texttt{\{\text{TCP:80}\}, \{\text{UDP:80}\}, \{\text{SCTP:80}\}}
     \end{align*}
     Esta expansión evita ambigüedades y asegura cobertura completa de los protocolos con puertos.
     
-    \item \textbf{Configuración mediante JSON:} Se adoptó un formato de archivo JSON para especificar reglas de firewall, permitiendo:
+    \item \textbf{Configuración mediante \texttt{JSON}:} Se adoptó un formato de archivo \texttt{JSON} para especificar reglas de firewall, permitiendo:
     \begin{itemize}
         \item Modificación de políticas sin recompilar el controlador
         \item Validación estructural de reglas mediante parsing
         \item Fácil versionado y documentación de políticas
     \end{itemize}
     
-    \item \textbf{MAC Learning activo:} Se implementó un mecanismo de aprendizaje que:
+    \item \textbf{\texttt{MAC} Learning activo:} Se implementó un mecanismo de aprendizaje que:
     \begin{itemize}
-        \item Almacena la asociación MAC $\leftrightarrow$ puerto en un diccionario por switch
+        \item Almacena la asociación \texttt{MAC} $\leftrightarrow$ puerto en un diccionario por switch
         \item Instala reglas de forwarding con timeout de 10 segundos
-        \item Realiza flooding (OFPP\_FLOOD) solo cuando el destino es desconocido
+        \item Realiza flooding (\texttt{OFPP\_FLOOD}) solo cuando el destino es desconocido
     \end{itemize}
     
-    \item \textbf{Manejo reactivo secundario:} Además de las reglas proactivas, el controlador verifica cada PacketIn contra las políticas del firewall e instala dinámicamente reglas DROP si detecta tráfico bloqueado que no fue capturado proactivamente. Esto actúa como una capa de seguridad adicional.
+    \item \textbf{Manejo reactivo secundario:} Además de las reglas proactivas, el controlador verifica cada PacketIn contra las políticas del firewall e instala dinámicamente reglas \texttt{DROP} si detecta tráfico bloqueado que no fue capturado proactivamente. Esto actúa como una capa de seguridad adicional.
     
-    \item \textbf{Logging detallado:} Se implementó logging a nivel INFO para operaciones principales (instalación de reglas, aprendizaje MAC) y DEBUG para eventos de bajo nivel (matching de paquetes, decisiones de forwarding).
+    \item \textbf{Logging detallado:} Se implementó logging a nivel \texttt{INFO} para operaciones principales (instalación de reglas, aprendizaje \texttt{MAC}), \texttt{DEBUG} para eventos de bajo nivel (matching de paquetes, decisiones de forwarding) y \texttt{WARNING} para situaciones anómalas (paquetes no matcheados, errores de parsing). Esto facilita el monitoreo y debugging del sistema en producción.
 \end{itemize}
 
 \subsection{Limitaciones del Sistema}
@@ -78,17 +84,17 @@ Durante el diseño del sistema, se tomaron las siguientes decisiones clave para 
 A pesar de las decisiones de diseño y las suposiciones realizadas, el sistema presenta las siguientes limitaciones inherentes:
 
 \begin{itemize}
-    \item \textbf{OpenFlow 1.0:} La versión del protocolo utilizada tiene capacidades limitadas de matching (no soporta nativamente IPv6, matching de campos arbitrarios, ni metadata). Versiones posteriores (1.3+) ofrecen mayor flexibilidad.
+    \item \textbf{OpenFlow 1.0:} La versión del protocolo utilizada tiene capacidades limitadas de matching (no soporta nativamente \texttt{IPv6,} matching de campos arbitrarios, ni metadata). Versiones posteriores (1.3+)\cite{openflow13} ofrecen mayor flexibilidad.
     
-    \item \textbf{Sin soporte IPv6:} El firewall solo filtra tráfico IPv4, pricnipalmente debido a limitaciones de OpenFlow 1.0.
+    \item \textbf{Sin soporte \texttt{IPv6:}} El firewall solo filtra tráfico \texttt{IPv4}, principalmente debido a limitaciones de OpenFlow 1.0.
     
     \item \textbf{Escalabilidad:} Con un número elevado de hosts y políticas de firewall complejas el controlador simple de aprendizaje puede no escalar eficientemente con un número muy grande de hosts o switches.
     
-    \item \textbf{Punto único de falla:} El controlador POX es centralizado. Si falla, los switches pierden capacidad de gestión dinámica (aunque las reglas instaladas previamente permanecen activas). No se implementó redundancia del controlador, por lo que una falla del controlador interrumpiría la red.
+    \item \textbf{Punto único de falla:} El controlador POX es centralizado. Si falla, los switches pierden capacidad de gestión dinámica (aunque las reglas instaladas previamente permanecen activas). Los switches pueden continuar usando reglas instaladas previamente (modo fail-secure) o pasar a modo tradicional L2 forwarding\cite{mpls_cisco}
     
     \item \textbf{Latencia de primer paquete:} El primer paquete de cada flujo nuevo experimenta latencia adicional debido al round-trip al controlador (PacketIn $\rightarrow$ procesamiento $\rightarrow$ FlowMod).
     
-    \item \textbf{Sin DPI (Deep Packet Inspection):} El firewall opera únicamente en headers de capa 2-4. No inspecciona el payload de los paquetes.
+    \item \textbf{Sin \texttt{DPI} (Deep Packet Inspection):} El firewall opera únicamente en headers de capa 2-4. No inspecciona el payload de los paquetes.
     
     \item \textbf{Sin rate limiting:} El sistema no implementa limitación de tasa (rate limiting) para prevenir saturar la conexión controlador-switch con PacketIns.
 \end{itemize}

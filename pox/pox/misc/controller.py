@@ -35,7 +35,7 @@ class Controller(EventMixin):
                     # Expandir por protocolo (si es ANY con puerto)
                     if protocol == "ANY" and has_port:
                         # Expandir a TCP y UDP
-                        for p in ["TCP", "UDP", "SCTP"]:
+                        for p in ["TCP", "UDP"]:
                             r2 = dict(rule)
                             r2["protocol"] = p
                             r2["ip_version"] = "IPv4"

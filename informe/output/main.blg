@@ -1,0 +1,73 @@
+This is BibTeX, Version 0.99d (TeX Live 2022/dev/Debian)
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: main.aux
+The style file: unsrt.bst
+A level-1 auxiliary file: utilities/title.aux
+A level-1 auxiliary file: content/introduccion.aux
+A level-1 auxiliary file: content/hipotesis.aux
+A level-1 auxiliary file: content/implementacion.aux
+A level-1 auxiliary file: content/pruebas.aux
+A level-1 auxiliary file: content/preguntas.aux
+A level-1 auxiliary file: content/dificultades.aux
+A level-1 auxiliary file: content/conclusion.aux
+Database file #1: utilities/referencias.bib
+Warning--entry type for "bgp_rfc4271" isn't style-file defined
+--line 110 of file utilities/referencias.bib
+Warning--entry type for "ospf_rfc2328" isn't style-file defined
+--line 129 of file utilities/referencias.bib
+Warning--entry type for "rip_rfc2453" isn't style-file defined
+--line 139 of file utilities/referencias.bib
+Warning--entry type for "ecmp_rfc2992" isn't style-file defined
+--line 168 of file utilities/referencias.bib
+Warning--entry type for "tcp_ssl" isn't style-file defined
+--line 273 of file utilities/referencias.bib
+Warning--entry type for "ipv6_rfc" isn't style-file defined
+--line 283 of file utilities/referencias.bib
+Warning--entry type for "icmp_rfc" isn't style-file defined
+--line 301 of file utilities/referencias.bib
+Warning--entry type for "arp_rfc" isn't style-file defined
+--line 319 of file utilities/referencias.bib
+Warning--empty journal in catalyst_3850
+Warning--can't use both volume and number fields in p4_language
+You've used 40 entries,
+            1791 wiz_defined-function locations,
+            634 strings with 8247 characters,
+and the built_in function-call counts, 6291 in all, are:
+= -- 563
+> -- 264
+< -- 2
++ -- 112
+- -- 72
+* -- 194
+:= -- 1033
+add.period$ -- 157
+call.type$ -- 40
+change.case$ -- 33
+chr.to.int$ -- 0
+cite$ -- 42
+duplicate$ -- 239
+empty$ -- 720
+format.name$ -- 72
+if$ -- 1444
+int.to.chr$ -- 0
+int.to.str$ -- 40
+missing$ -- 4
+newline$ -- 239
+num.names$ -- 40
+pop$ -- 206
+preamble$ -- 1
+purify$ -- 0
+quote$ -- 0
+skip$ -- 88
+stack$ -- 0
+substring$ -- 59
+swap$ -- 56
+text.length$ -- 2
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 0
+warning$ -- 2
+while$ -- 47
+width$ -- 42
+write$ -- 478
+(There were 10 warnings)

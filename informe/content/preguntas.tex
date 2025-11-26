@@ -16,19 +16,19 @@ Los switches y routers son dispositivos de red fundamentales pero operan en dife
 \hline
 Capa de operación & Capa de enlace de datos (L2) & Capa de red (L3) \\
 \hline
-Dirección utilizada & Direcciones MAC (48 bits) & Direcciones IP (IPv4: 32 bits, IPv6: 128 bits) \\
+Dirección utilizada & Direcciones \texttt{MAC} (48 bits) & Direcciones \texttt{IP} (\texttt{IPv4}: 32 bits, \texttt{IPv6}: 128 bits) \\
 \hline
-Ámbito & Red local (LAN) - mismo dominio de broadcast & Interconecta redes diferentes - separa dominios de red \\
+Ámbito & Red local (\texttt{LAN}) - mismo dominio de broadcast & Interconecta redes diferentes - separa dominios de red \\
 \hline
-Tabla de forwarding & Tabla MAC-to-port (aprendida dinámicamente) & Tabla de rutas (estática o dinámica vía protocolos de enrutamiento) \\
+Tabla de forwarding & Tabla \texttt{MAC-to-port} (aprendida dinámicamente) & Tabla de rutas (estática o dinámica vía protocolos de enrutamiento) \\
 \hline
-Decisión de reenvío & Basada en dirección MAC destino & Basada en dirección IP destino y prefijos de red \\
+Decisión de reenvío & Basada en dirección \texttt{MAC} destino & Basada en dirección \texttt{IP} destino y prefijos de red \\
 \hline
-Procesamiento de paquetes & Reenvío rápido (switching) sin modificar el paquete & Decrementa TTL, recalcula checksum, puede fragmentar \\
+Procesamiento de paquetes & Reenvío rápido (switching) sin modificar el paquete & Decrementa \texttt{TTL}, recalcula checksum, puede fragmentar \\
 \hline
 Broadcast/flooding & Propaga broadcasts por todos los puertos & No propaga broadcasts entre redes \\
 \hline
-Protocolo de descubrimiento & Protocolo de Spanning Tree (STP) para evitar loops & Protocolos de enrutamiento (RIP, OSPF, BGP) \\
+Protocolo de descubrimiento & Protocolo de Spanning Tree (\texttt{STP})\cite{spanning_tree} para evitar loops & Protocolos de enrutamiento (\texttt{RIP}\cite{rip_rfc2453}, \texttt{OSPF}\cite{ospf_rfc2328}, \texttt{BGP}\cite{bgp_rfc4271}) \\
 \hline
 Latencia & Muy baja (~microsegundos) & Mayor (~milisegundos) debido a procesamiento L3 \\
 \hline
@@ -40,9 +40,9 @@ Latencia & Muy baja (~microsegundos) & Mayor (~milisegundos) debido a procesamie
 \paragraph{Ejemplo ilustrativo:}
 
 \begin{itemize}
-    \item \textbf{Switch:} Si el host \texttt{h1} (MAC: \texttt{00:00:00:00:00:01}) envía un frame a \texttt{h3} (MAC: \texttt{00:00:00:00:00:03}), el switch consulta su tabla MAC y reenvía el frame únicamente por el puerto donde aprendió que está \texttt{h3}. Si no conoce la MAC destino, hace flooding.
+    \item \textbf{Switch:} Si el host \texttt{h1} (\texttt{MAC: 00:00:00:00:00:01}) envía un frame a \texttt{h3} (\texttt{MAC: 00:00:00:00:00:03}), el switch consulta su tabla \texttt{MAC} y reenvía el frame únicamente por el puerto donde aprendió que está \texttt{h3}. Si no conoce la \texttt{MAC} destino, hace flooding.
     
-    \item \textbf{Router:} Si el host \texttt{192.168.1.10} envía un paquete a \texttt{10.0.0.5}, el router consulta su tabla de rutas, determina que debe salir por la interfaz conectada a la red \texttt{10.0.0.0/24}, decrementa el TTL, recalcula el checksum IP, y reencapsula el paquete en un nuevo frame Ethernet con la MAC del siguiente salto.
+    \item \textbf{Router:} Si el host \texttt{192.168.1.10} envía un paquete a \texttt{10.0.0.5}, el router consulta su tabla de rutas, determina que debe salir por la interfaz conectada a la red \texttt{10.0.0.0/24}, decrementa el \texttt{TTL}, recalcula el checksum \texttt{IP}, y reencapsula el paquete en un nuevo frame Ethernet con la \texttt{MAC} del siguiente salto.
 \end{itemize}
 
 \subsubsection{Similitudes}
@@ -50,7 +50,7 @@ Latencia & Muy baja (~microsegundos) & Mayor (~milisegundos) debido a procesamie
 A pesar de operar en diferentes capas, switches y routers comparten características fundamentales:
 
 \begin{enumerate}
-    \item \textbf{Función de forwarding:} Ambos toman decisiones sobre cómo reenviar tráfico según información en sus tablas (MAC-to-port para switches, tabla de rutas para routers).
+    \item \textbf{Función de forwarding:} Ambos toman decisiones sobre cómo reenviar tráfico según información en sus tablas (\texttt{MAC-to-port} para switches, tabla de rutas para routers).
     
     \item \textbf{Buffering:} Ambos mantienen buffers para paquetes entrantes cuando hay congestión o cuando la interfaz de salida está ocupada.
     
@@ -58,21 +58,21 @@ A pesar de operar en diferentes capas, switches y routers comparten característ
     \begin{itemize}
         \item Múltiples puertos/interfaces de red
         \item Memoria para almacenar tablas de forwarding
-        \item ASICs o procesadores especializados para procesamiento de paquetes
+        \item ASICs o procesadores especializados\cite{asic_networking} para procesamiento de paquetes
         \item Bus interno de alta velocidad para comunicación entre puertos
     \end{itemize}
     
-    \item \textbf{Paradigma store-and-forward:} Ambos reciben el paquete completo, lo almacenan temporalmente, verifican su integridad (CRC/checksum), y luego lo reenvían.
+        \item \textbf{Paradigma store-and-forward:} Ambos reciben el paquete completo, lo almacenan temporalmente, verifican su integridad (\texttt{CRC}/checksum), y luego lo reenvían.
     
     \item \textbf{Separación plano de control y plano de datos:}
     \begin{itemize}
-        \item \textbf{Plano de control:} Construye y mantiene las tablas (aprendizaje MAC para switches, protocolos de enrutamiento para routers)
+        \item \textbf{Plano de control:} Construye y mantiene las tablas (aprendizaje \texttt{MAC} para switches, protocolos de enrutamiento para routers)
         \item \textbf{Plano de datos:} Utiliza las tablas para reenviar paquetes a alta velocidad
     \end{itemize}
     
-    \item \textbf{Soporte para VLANs (en switches modernos):} Los switches pueden segmentar redes lógicamente, y algunos routers incorporan funcionalidad de switching L2.
+    \item \textbf{Soporte para VLANs (en switches modernos)\cite{vlan_ieee}:} Los switches pueden segmentar redes lógicamente, y algunos routers incorporan funcionalidad de switching L2.
     
-    \item \textbf{Gestión y configuración:} Ambos suelen ofrecer interfaces de gestión (CLI, SNMP, web) para configuración y monitoreo.
+    \item \textbf{Gestión y configuración:} Ambos suelen ofrecer interfaces de gestión (\texttt{CLI\cite{cli_management}}, \texttt{SNMP}\cite{snmp_protocol}, \texttt{web}) para configuración y monitoreo.
 \end{enumerate}
 
 \subsubsection{Convergencia: Switch de Capa 3}
@@ -80,9 +80,9 @@ A pesar de operar en diferentes capas, switches y routers comparten característ
 Los \textbf{switches de capa 3} (L3 switches o multilayer switches) combinan ambas funcionalidades:
 \begin{itemize}
     \item Realizan switching L2 a velocidad de línea
-    \item Incluyen capacidades de enrutamiento IP (L3)
+    \item Incluyen capacidades de enrutamiento \texttt{IP} (L3)
     \item Optimizados para enrutamiento dentro del mismo dominio administrativo (intra-AS)
-    \item Ejemplo: Cisco Catalyst 3850, Arista 7050
+    \item Ejemplo: Cisco Catalyst 3850\cite{catalyst_3850}, Arista 7050\cite{arista_7050}
 \end{itemize}
 
 \subsection{¿Cuál es la diferencia entre un Switch convencional y un Switch OpenFlow?}
@@ -133,14 +133,14 @@ Un switch tradicional integra el plano de control y el plano de datos en el mism
         \Rightarrow \text{Tabla MAC}[M] = P
     \end{align*}
     
-    \item \textbf{Decisión de forwarding:} Al recibir un frame con MAC\_dst = M:
+    \item \textbf{Decisión de forwarding:} Al recibir un frame con \texttt{MAC\_dst = M}:
     \begin{itemize}
-        \item Si M está en la tabla: reenviar por puerto asociado
-        \item Si M no está: flooding (enviar por todos los puertos excepto el de entrada)
-        \item Si M es broadcast (\texttt{ff:ff:ff:ff:ff:ff}): flooding
+        \item Si \texttt{M} está en la tabla: reenviar por puerto asociado
+        \item Si \texttt{M} no está: flooding (enviar por todos los puertos excepto el de entrada)
+        \item Si \texttt{M} es broadcast (\texttt{ff:ff:ff:ff:ff:ff}): flooding
     \end{itemize}
     
-    \item \textbf{Protocolos embebidos:} Spanning Tree Protocol (STP) para prevenir loops, VLAN Trunking Protocol (VTP) para sincronizar VLANs, etc.
+    \item \textbf{Protocolos embebidos:} Spanning Tree Protocol (\texttt{STP}) para prevenir loops, VLAN Trunking Protocol (\texttt{VTP}) para sincronizar VLANs, etc.
     
     \item \textbf{Configuración propietaria:} Cada fabricante (Cisco, Juniper, HP) tiene su propia CLI y sintaxis de configuración.
     
@@ -191,7 +191,7 @@ Un switch OpenFlow separa el plano de control (que se mueve a un controlador ext
 \begin{enumerate}
     \item \textbf{Control centralizado:} El controlador externo (ej: POX, Ryu, ONOS) toma todas las decisiones de control y las comunica a los switches mediante el protocolo OpenFlow.
     
-    \item \textbf{Flow Table:} En lugar de una simple tabla MAC-to-port, los switches OpenFlow mantienen una \textbf{tabla de flujos} con entradas de la forma:
+    \item \textbf{Flow Table:} En lugar de una simple tabla \texttt{MAC-to-port}, los switches OpenFlow mantienen una \textbf{tabla de flujos} con entradas de la forma:
     \begin{verbatim}
     [Match Fields] -> [Actions] -> [Priority] -> [Counters] -> [Timeouts]
     \end{verbatim}
@@ -217,7 +217,7 @@ Un switch OpenFlow separa el plano de control (que se mueve a un controlador ext
         \item \texttt{drop} - Descartar paquete (acción implícita: lista vacía)
         \item \texttt{FLOOD} - Enviar por todos los puertos (excepto entrada)
         \item \texttt{CONTROLLER} - Enviar al controlador
-        \item \texttt{modify\_field} - Modificar campos (MAC, IP, VLAN)
+        \item \texttt{modify\_field} - Modificar campos (\texttt{MAC}, \texttt{IP}, \texttt{VLAN})
     \end{itemize}
     
     \item \textbf{Comportamiento ante paquete desconocido:}
@@ -242,8 +242,8 @@ Un switch OpenFlow separa el plano de control (que se mueve a un controlador ext
     
     \item \textbf{Timeouts:} Las reglas pueden tener:
     \begin{itemize}
-        \item \texttt{idle\_timeout}: Regla expira si no matchea paquetes durante X segundos
-        \item \texttt{hard\_timeout}: Regla expira después de X segundos desde instalación
+        \item \texttt{idle\_timeout}: Regla expira si no matchea paquetes durante $X$ segundos
+        \item \texttt{hard\_timeout}: Regla expira después de $X$ segundos desde instalación
     \end{itemize}
     
     \item \textbf{Contadores por flujo:} Cada entrada mantiene estadísticas:
@@ -281,9 +281,9 @@ Un switch OpenFlow separa el plano de control (que se mueve a un controlador ext
 \hline
 Plano de control & Integrado en el switch & Centralizado en controlador externo \\
 \hline
-Lógica de forwarding & Fija (aprendizaje MAC, STP) & Programable vía software \\
+Lógica de forwarding & Fija (aprendizaje \texttt{MAC}, \texttt{STP}) & Programable vía software \\
 \hline
-Granularidad de reglas & Solo MAC-to-port & Match en L2, L3, L4 simultáneamente \\
+Granularidad de reglas & Solo \texttt{MAC-to-port} & Match en L2, L3, L4 simultáneamente \\
 \hline
 Instalación de reglas & Aprendizaje automático reactivo & Proactiva o reactiva según controlador \\
 \hline
@@ -370,19 +370,19 @@ Internet está compuesta por decenas de miles de \textbf{Autonomous Systems (AS)
 \textbf{Características clave de routing inter-AS:}
 
 \begin{enumerate}
-    \item \textbf{Border Gateway Protocol (BGP):} Protocolo estándar para intercambiar información de enrutamiento entre ASes diferentes. Cada AS anuncia sus prefijos IP y aprende rutas hacia otros ASes.
+    \item \textbf{Border Gateway Protocol (BGP)\cite{bgp_rfc4271}:} Protocolo estándar para intercambiar información de enrutamiento entre ASes diferentes. Cada AS anuncia sus prefijos IP y aprende rutas hacia otros ASes.
     
     \item \textbf{Políticas de routing complejas:} Los ASes aplican políticas basadas en:
     \begin{itemize}
         \item Relaciones comerciales (customer, provider, peer)
         \item Preferencias de tráfico (evitar ciertas rutas)
         \item Ingeniería de tráfico (balanceo de carga)
-        \item Seguridad (filtrado de rutas, RPKI)
+        \item Seguridad (filtrado de rutas, RPKI\cite{rpki_security})
     \end{itemize}
     
     \item \textbf{Autonomía administrativa:} Cada AS es administrado independientemente. No existe (ni debe existir) una entidad centralizada que controle el routing global de Internet.
     
-    \item \textbf{Escalabilidad:} La tabla de rutas BGP global contiene >900,000 prefijos IPv4 y >150,000 prefijos IPv6 (datos 2024).
+    \item \textbf{Escalabilidad:} La tabla de rutas BGP global contiene >900,000 prefijos \texttt{IPv4} y >150,000 prefijos \texttt{IPv6} (datos 2024).
 \end{enumerate}
 
 \subsubsection{Limitaciones de OpenFlow para Routing Inter-AS}
@@ -396,7 +396,7 @@ Internet está compuesta por decenas de miles de \textbf{Autonomous Systems (AS)
     
     \item \textbf{Latencia inaceptable:} Si un paquete en Australia necesita consultar al controlador en Europa antes de ser reenviado, la latencia sería de cientos de milisegundos, rompiendo aplicaciones en tiempo real.
     
-    \item \textbf{Single point of failure:} Un controlador centralizado para Internet sería un objetivo crítico para ataques DDoS y fallos catastróficos.
+    \item \textbf{Single point of failure:} Un controlador centralizado para Internet sería un objetivo crítico para ataques DDoS\cite{ddos_cloudflare} y fallos catastróficos.
 \end{itemize}
 
 \textbf{Cálculo ilustrativo:}
@@ -413,10 +413,10 @@ Comparado con routing BGP tradicional donde el reenvío ocurre en microsegundos.
 
 \paragraph{2. Escalabilidad de Flow Tables}\mbox{}\\
 
-\textbf{Problema:} Los switches OpenFlow tienen capacidad limitada en sus flow tables (típicamente 1,000 - 10,000 entradas en TCAM).
+\textbf{Problema:} Los switches OpenFlow tienen capacidad limitada en sus flow tables (típicamente 1,000 - 10,000 entradas en \texttt{TCAM}).
 
 \begin{itemize}
-    \item \textbf{Tabla de rutas global:} >900,000 prefijos IPv4 no caben en la TCAM de un switch OpenFlow estándar.
+    \item \textbf{Tabla de rutas global:} >900,000 prefijos \texttt{IPv4} no caben en la \texttt{TCAM}\cite{tcam_cisco} de un switch OpenFlow estándar.
     
     \item \textbf{Agregación limitada:} BGP realiza agregación de prefijos extensiva. OpenFlow 1.0 no tiene mecanismos sofisticados para agregación jerárquica de reglas.
     
@@ -439,7 +439,7 @@ Comparado con routing BGP tradicional donde el reenvío ocurre en microsegundos.
     
     \item \textbf{OSPF/IS-IS:} Protocolos de routing intra-AS tampoco están soportados nativamente.
     
-    \item \textbf{Multipath routing:} BGP soporta ECMP (Equal-Cost Multi-Path). OpenFlow 1.0 tiene soporte limitado para balanceo de carga entre múltiples caminos.
+    \item \textbf{Multipath routing:} BGP soporta ECMP (Equal-Cost Multi-Path)\cite{ecmp_rfc2992}. OpenFlow 1.0 tiene soporte limitado para balanceo de carga entre múltiples caminos.
 \end{itemize}
 
 \paragraph{4. Políticas y Autonomía Administrativa}\mbox{}\\
@@ -463,7 +463,7 @@ Comparado con routing BGP tradicional donde el reenvío ocurre en microsegundos.
     
     \item \textbf{Route flapping:} BGP tiene mecanismos (route damping) para manejar rutas inestables. El controlador OpenFlow debería replicar esta lógica.
     
-    \item \textbf{Loops de routing:} BGP usa AS-PATH para prevenir loops. OpenFlow no tiene un mecanismo análogo incorporado.
+    \item \textbf{Loops de routing:} BGP usa \texttt{AS-PATH} para prevenir loops. OpenFlow no tiene un mecanismo análogo incorporado.
 \end{itemize}
 
 \subsubsection{Escenarios Donde OpenFlow SÍ es Viable}
@@ -481,7 +481,7 @@ A pesar de las limitaciones globales, OpenFlow es extremadamente efectivo en cie
     \item Políticas uniformes
 \end{itemize}
 
-\textbf{Ejemplo:} Este trabajo implementa un firewall SDN en una topología de 4 switches. Escalar a 100-1000 switches en un data center es factible con controladores de alta disponibilidad (ej: ONOS con clustering).
+\textbf{Ejemplo:} Este trabajo implementa un firewall SDN en una topología de 4 switches. Escalar a 100-1000 switches en un data center es factible con controladores de alta disponibilidad (ej: ONOS\cite{onos_controller} con clustering).
 
 \paragraph{2. Campus Networks}\mbox{}\\
 
@@ -532,7 +532,7 @@ Aún así, no resuelven los problemas fundamentales de escalabilidad y autonomí
 
 \paragraph{2. SDN para Ingeniería de Tráfico}\mbox{}\\
 
-\textbf{Ejemplo real:} Google B4 WAN
+\textbf{Ejemplo real:} Google B4 WAN\cite{google_b4}
 
 \begin{itemize}
     \item Google usa SDN (protocolo propietario, no OpenFlow estándar) para gestionar su WAN privada entre data centers.
@@ -540,7 +540,7 @@ Aún así, no resuelven los problemas fundamentales de escalabilidad y autonomí
     \item Beneficio: Utilización de enlaces >90\% vs ~40\% con MPLS tradicional.
 \end{itemize}
 
-\paragraph{3. Segment Routing (SR) y SRv6}\mbox{}\\
+\paragraph{3. Segment Routing (SR) y SRv6}\cite{segment_routing}\mbox{}\\
 
 \textbf{Enfoque híbrido:}
 \begin{itemize}
@@ -550,7 +550,7 @@ Aún así, no resuelven los problemas fundamentales de escalabilidad y autonomí
     \item Usado por operadores tier-1 (AT\&T, China Telecom)
 \end{itemize}
 
-\paragraph{4. P4 y Programmable Data Planes}\mbox{}\\
+\paragraph{4. P4 y Programmable Data Planes}\cite{p4_language}\mbox{}\\
 
 \textbf{P4 (Programming Protocol-Independent Packet Processors):}
 \begin{itemize}
@@ -571,7 +571,7 @@ Aún así, no resuelven los problemas fundamentales de escalabilidad y autonomí
 \hline
 Imposibilidad de control centralizado global & Internet depende de la autonomía de decenas de miles de ASes. Un controlador centralizado violaría este principio fundamental. \\
 \hline
-Escalabilidad de flow tables & 900,000+ prefijos IPv4 no caben en TCAM de switches commodity. \\
+Escalabilidad de flow tables & 900,000+ prefijos \texttt{IPv4} no caben en TCAM de switches commodity. \\
 \hline
 Latencia del primer paquete & Consultar un controlador remoto añade 100-300 ms, inaceptable para aplicaciones en tiempo real. \\
 \hline

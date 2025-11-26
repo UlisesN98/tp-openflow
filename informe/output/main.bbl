@@ -1,0 +1,262 @@
+\begin{thebibliography}{10}
+
+\bibitem{cisco_sdn}
+{Cisco Systems}.
+\newblock Software-defined networking (sdn).
+\newblock
+  \url{https://www.cisco.com/c/en/us/solutions/software-defined-networking/overview.html},
+  2024.
+\newblock Accessed: 2024.
+
+\bibitem{openflow_odp}
+{Open Networking Foundation}.
+\newblock Open datapath.
+\newblock
+  \url{https://opennetworking.org/technical-communities/areas/specification/open-datapath/},
+  2025.
+\newblock Accessed: 2025.
+
+\bibitem{cisco_firewall}
+{Cisco Systems}.
+\newblock What is a firewall?
+\newblock
+  \url{https://www.cisco.com/site/us/en/learn/topics/security/what-is-a-firewall.html},
+  2024.
+\newblock Accessed: 2024.
+
+\bibitem{pox_doc}
+{NOXRepo}.
+\newblock {\em POX Controller Documentation}.
+\newblock NOXRepo, 2025.
+\newblock Accessed: 2025.
+
+\bibitem{mininet}
+{Mininet Team}.
+\newblock Mininet: An instant virtual network on your laptop (or other pc).
+\newblock \url{https://mininet.org/}, 2024.
+\newblock Accessed: 2024.
+
+\bibitem{openflow10}
+{Open Networking Foundation}.
+\newblock {\em OpenFlow Switch Specification, Version 1.0.0}.
+\newblock Open Networking Foundation, 12 2009.
+\newblock Accessed: 2025.
+
+\bibitem{tcp_ssl}
+T.~Dierks and E.~Rescorla.
+\newblock The transport layer security (tls) protocol version 1.2.
+\newblock RFC 5246, 8 2008.
+\newblock Internet Engineering Task Force.
+
+\bibitem{ipv6_rfc}
+S.~Deering and R.~Hinden.
+\newblock Internet protocol, version 6 (ipv6) specification.
+\newblock RFC 2460, 12 1998.
+\newblock Internet Engineering Task Force.
+
+\bibitem{arp_rfc}
+D.~Plummer.
+\newblock An ethernet address resolution protocol.
+\newblock RFC 826, 11 1982.
+\newblock Internet Engineering Task Force.
+
+\bibitem{openflow13}
+{Open Networking Foundation}.
+\newblock {\em OpenFlow Switch Specification, Version 1.3.0}.
+\newblock Open Networking Foundation, 6 2012.
+\newblock Accessed: 2025.
+
+\bibitem{mpls_cisco}
+{Cisco Systems}.
+\newblock Multiprotocol label switching (mpls).
+\newblock
+  \url{https://www.cisco.com/c/en/us/tech/multiprotocol-label-switching-mpls/index.html},
+  2024.
+\newblock Accessed: 2024.
+
+\bibitem{openvswitch}
+{Open vSwitch Project}.
+\newblock {\em Open vSwitch Documentation}.
+\newblock Open vSwitch, 2024.
+\newblock Accessed: 2024.
+
+\bibitem{json_format}
+{ECMA International}.
+\newblock Json (javascript object notation).
+\newblock \url{https://www.json.org/}, 2017.
+\newblock Standard ECMA-404.
+
+\bibitem{aws_cidr}
+{Amazon Web Services}.
+\newblock ¿qué es la notación cidr?
+\newblock \url{https://aws.amazon.com/es/what-is/cidr/}, 2024.
+\newblock Accessed: 2024.
+
+\bibitem{ovs_ofctl}
+{Open vSwitch Project}.
+\newblock ovs-ofctl - openflow switch management utility.
+\newblock \url{https://docs.openvswitch.org/en/latest/ref/ovs-ofctl.8/}, 2024.
+\newblock Accessed: 2024.
+
+\bibitem{wireshark}
+{Wireshark Foundation}.
+\newblock Wireshark - network protocol analyzer.
+\newblock \url{https://www.wireshark.org/}, 2024.
+\newblock Accessed: 2024.
+
+\bibitem{python_http_server}
+{Python Software Foundation}.
+\newblock Python http.server - http servers.
+\newblock \url{https://docs.python.org/3/library/http.server.html}, 2024.
+\newblock Accessed: 2024.
+
+\bibitem{curl}
+{curl Project}.
+\newblock {\em curl - Command Line Tool and Library for Transferring Data with
+  URLs}.
+\newblock curl, 2024.
+\newblock Accessed: 2024.
+
+\bibitem{netcat}
+{Oracle Corporation}.
+\newblock {\em netcat(1) - Linux Man Page}.
+\newblock Oracle, 2024.
+\newblock Accessed: 2024.
+
+\bibitem{iperf_doc}
+{iperf}.
+\newblock {\em iperf Documentation}.
+\newblock iperf, 2025.
+\newblock Accessed: 2025.
+
+\bibitem{tcp_handshake}
+{Cisco Systems}.
+\newblock Tcp three-way handshake.
+\newblock
+  \url{https://www.cisco.com/c/en/us/support/docs/ip/transmission-control-protocol-tcp/8742-tcp-handshake.html},
+  2024.
+\newblock Accessed: 2024.
+
+\bibitem{icmp_rfc}
+J.~Postel.
+\newblock Internet control message protocol.
+\newblock RFC 792, 9 1981.
+\newblock Internet Engineering Task Force.
+
+\bibitem{spanning_tree}
+{Cisco Systems}.
+\newblock Understanding spanning tree protocol (802.1d).
+\newblock
+  \url{https://www.cisco.com/c/en/us/support/docs/lan-switching/spanning-tree-protocol/5234-5.html},
+  2024.
+\newblock Accessed: 2024.
+
+\bibitem{rip_rfc2453}
+G.~Malkin.
+\newblock Rip version 2.
+\newblock RFC 2453, 11 1998.
+\newblock Internet Engineering Task Force.
+
+\bibitem{ospf_rfc2328}
+J.~Moy.
+\newblock Ospf version 2.
+\newblock RFC 2328, 4 1998.
+\newblock Internet Engineering Task Force.
+
+\bibitem{bgp_rfc4271}
+Y.~Rekhter, T.~Li, and S.~Hares.
+\newblock A border gateway protocol 4 (bgp-4).
+\newblock RFC 4271, 1 2006.
+\newblock Internet Engineering Task Force.
+
+\bibitem{asic_networking}
+T.~Spalink, S.~Karlin, and L.~Peterson.
+\newblock Network processors and application-specific integrated circuits.
+\newblock {\em ACM SIGCOMM Computer Communication Review}, 31(4):11--22, 2001.
+
+\bibitem{vlan_ieee}
+{IEEE}.
+\newblock Ieee 802.1q - virtual lans.
+\newblock \url{https://standards.ieee.org/ieee/802.1Q/}, 2022.
+\newblock Accessed: 2024.
+
+\bibitem{cli_management}
+{Cisco Systems}.
+\newblock Network device management via cli.
+\newblock
+  \url{https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/fundamentals/command/cf_command_ref.html},
+  2024.
+\newblock Accessed: 2024.
+
+\bibitem{snmp_protocol}
+{Internet Engineering Task Force}.
+\newblock Simple network management protocol (snmp).
+\newblock \url{https://datatracker.ietf.org/wg/snmp/about/}, 2024.
+\newblock Accessed: 2024.
+
+\bibitem{catalyst_3850}
+{Cisco Systems}.
+\newblock Cisco catalyst 3850 series switches data sheet.
+\newblock 2024.
+
+\bibitem{arista_7050}
+{Arista Networks}.
+\newblock Arista 7050 series data center switches.
+\newblock \url{https://www.arista.com/en/products/7050-series}, 2024.
+\newblock Accessed: 2024.
+
+\bibitem{rpki_security}
+{Internet Society}.
+\newblock Resource public key infrastructure (rpki).
+\newblock
+  \url{https://www.internetsociety.org/resources/doc/2020/resource-public-key-infrastructure-rpki/},
+  2024.
+\newblock Accessed: 2024.
+
+\bibitem{ddos_cloudflare}
+{Cloudflare}.
+\newblock What is a ddos attack?
+\newblock
+  \url{https://www.cloudflare.com/learning/ddos/what-is-a-ddos-attack/}, 2024.
+\newblock Accessed: 2024.
+
+\bibitem{tcam_cisco}
+{Cisco Systems}.
+\newblock Understanding tcam and cam tables.
+\newblock
+  \url{https://www.cisco.com/c/en/us/support/docs/switches/catalyst-6500-series-switches/24046-143.html},
+  2023.
+\newblock Accessed: 2024.
+
+\bibitem{ecmp_rfc2992}
+D.~Thaler and C.~Hopps.
+\newblock Analysis of an equal-cost multi-path algorithm.
+\newblock RFC 2992, 11 2000.
+\newblock Internet Engineering Task Force.
+
+\bibitem{onos_controller}
+{Open Networking Foundation}.
+\newblock Onos - open network operating system.
+\newblock \url{https://opennetworking.org/onos/}, 2024.
+\newblock Accessed: 2024.
+
+\bibitem{google_b4}
+S.~Jain, A.~Kumar, S.~Mandal, J.~Ong, L.~Poutievski, A.~Singh, S.~Venkata,
+  J.~Wanderer, J.~Zhou, M.~Zhu, et~al.
+\newblock B4: Experience with a globally-deployed software defined wan.
+\newblock {\em ACM SIGCOMM Computer Communication Review}, 43(4):3--14, 2013.
+
+\bibitem{segment_routing}
+C.~Filsfils, S.~Previdi, L.~Ginsberg, B.~Decraene, S.~Litkowski, and R.~Shakir.
+\newblock Segment routing architecture.
+\newblock RFC 8402, 7 2018.
+\newblock Internet Engineering Task Force.
+
+\bibitem{p4_language}
+P.~Bosshart, D.~Daly, G.~Gibb, M.~Izzard, N.~McKeown, J.~Rexford,
+  C.~Schlesinger, D.~Talayco, A.~Vahdat, G.~Varghese, and D.~Walker.
+\newblock P4: Programming protocol-independent packet processors.
+\newblock In {\em ACM SIGCOMM Computer Communication Review}, volume~44, pages
+  87--95. ACM, 2014.
+
+\end{thebibliography}

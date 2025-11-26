@@ -10,7 +10,7 @@ Las pruebas se dividieron en cuatro categorías principales:
 \begin{enumerate}
     \item \textbf{Pruebas funcionales}: Verificación de reglas de firewall mediante tests 
     \item \textbf{Pruebas de conectividad}: Validación de comunicación entre hosts permitidos
-    \item \textbf{Pruebas de rendimiento}: Medición de throughput y latencia con iperf
+    \item \textbf{Pruebas de rendimiento}: Medición de throughput y latencia con \texttt{iperf}
     \item \textbf{Pruebas de flows}: Análisis de reglas instaladas en switches
 \end{enumerate}
 
@@ -19,7 +19,7 @@ Cada prueba se ejecutó en las siguientes condiciones:
 \begin{itemize}
     \item Topología: 4 switches en cascada con 4 hosts distribuidos
     \item Controlador: POX ejecutándose en la misma máquina que Mininet
-    \item Sistema operativo: Linux (Ubuntu/Debian)
+    \item Sistema operativo: \texttt{Linux} (\texttt{Ubuntu/Debian})
     \item OpenFlow versión: 1.0
     \item Switches virtuales: Open vSwitch 2.x
 \end{itemize}
@@ -40,7 +40,10 @@ h2 ping -c 3 -W 2 10.0.0.4
 \textbf{Resultado esperado:} 0\% packet loss
 
 \textbf{Resultado obtenido:}
-\begin{Verbatim}
+\begin{log}
+\begin{Sbox}
+\begin{minipage}{0.95\linewidth}
+\begin{verbatim}
 PING 10.0.0.4 (10.0.0.4) 56(84) bytes of data.
 64 bytes from 10.0.0.4: icmp_seq=1 ttl=64 time=0.123 ms
 64 bytes from 10.0.0.4: icmp_seq=2 ttl=64 time=0.089 ms
@@ -49,13 +52,19 @@ PING 10.0.0.4 (10.0.0.4) 56(84) bytes of data.
 --- 10.0.0.4 ping statistics ---
 3 packets transmitted, 3 received, 0% packet loss, time 2048ms
 rtt min/avg/max/mdev = 0.089/0.101/0.123/0.015 ms
-\end{Verbatim}
+\end{verbatim}
+\end{minipage}
+\end{Sbox}
+\fbox{\TheSbox}
+\caption{Resultado del ping entre \texttt{h2} y \texttt{h4}}
+\label{lab:test1_result}
+\end{log}
 
-\textbf{Análisis:} La comunicación entre h2 y h4 funciona correctamente, confirmando que el sistema permite tráfico no restringido.
+\textbf{Análisis:} La comunicación entre \texttt{h2} y \texttt{h4} funciona correctamente, confirmando que el sistema permite tráfico no restringido.
 
 \subsubsection{Test 2: Bloqueo de Puerto 80 (TCP y UDP)}
 
-\textbf{Objetivo:} Verificar que el puerto 80 está bloqueado para todos los protocolos de transporte (TCP, UDP, SCTP).
+\textbf{Objetivo:} Verificar que el puerto 80 está bloqueado para todos los protocolos de transporte (\texttt{TCP}, \texttt{UDP}, \texttt{SCTP}).
 
 \textbf{Regla aplicada:}
 \begin{lstlisting}[language=json]
@@ -66,12 +75,12 @@ rtt min/avg/max/mdev = 0.089/0.101/0.123/0.015 ms
 }
 \end{lstlisting}
 
-\paragraph{Test 2.1: Bloqueo TCP Puerto 80}
+\paragraph{Test 2.1: Bloqueo \texttt{TCP} Puerto 80}
 
 \textbf{Procedimiento:}
 \begin{enumerate}
-    \item Iniciar servidor HTTP en h3 puerto 80
-    \item Intentar conexión desde h2 usando curl
+    \item Iniciar servidor \texttt{HTTP}\cite{python_http_server} en \texttt{h3} puerto 80
+    \item Intentar conexión desde h2 usando \texttt{curl}\cite{curl}
 \end{enumerate}
 
 \textbf{Comandos ejecutados:}
@@ -86,19 +95,28 @@ h2> curl http://10.0.0.3:80
 \textbf{Resultado esperado:} Connection timeout o Connection refused
 
 \textbf{Resultado obtenido:}
-\begin{Verbatim}
+\begin{log}
+\begin{Sbox}
+\begin{minipage}{0.95\linewidth}
+\begin{verbatim}
 curl: (28) Failed to connect to 10.0.0.3 port 80 after 3000 ms: 
 Timeout was reached
-\end{Verbatim}
+\end{verbatim}
+\end{minipage}
+\end{Sbox}
+\fbox{\TheSbox}
+\caption{Salida del error de \texttt{curl} mostrando timeout}
+\label{lab:test2_1_result}
+\end{log}
 
-\textbf{Análisis:} El tráfico TCP al puerto 80 está correctamente bloqueado.
+\textbf{Análisis:} El tráfico \texttt{TCP} al puerto 80 está correctamente bloqueado.
 
-\paragraph{Test 2.2: Bloqueo UDP Puerto 80}
+\paragraph{Test 2.2: Bloqueo \texttt{UDP} Puerto 80}
 
 \textbf{Procedimiento:}
 \begin{enumerate}
-    \item Iniciar listener UDP en h3 puerto 80
-    \item Enviar datos desde h2 usando netcat
+    \item Iniciar listener \texttt{UDP} en \texttt{h3} puerto 80
+    \item Enviar datos desde h2 usando \textbf{netcat}\cite{netcat}
 \end{enumerate}
 
 \textbf{Comandos ejecutados:}
@@ -110,15 +128,15 @@ h3> nc -u -l 80
 h2> echo "test_udp" | nc -u -w 1 10.0.0.3 80
 \end{Verbatim}
 
-\textbf{Resultado esperado:} El mensaje no debe llegar a h3
+\textbf{Resultado esperado:} El mensaje no debe llegar a \texttt{h3}
 
-\textbf{Resultado obtenido:} El servidor en h3 no recibe ningún dato.
+\textbf{Resultado obtenido:} El servidor en \texttt{h3} no recibe ningún dato.
 
-\textbf{Análisis:} El tráfico UDP al puerto 80 está correctamente bloqueado.
+\textbf{Análisis:} El tráfico \texttt{UDP} al puerto 80 está correctamente bloqueado.
 
 \subsubsection{Test 3: Bloqueo Específico h1 $\rightarrow$ UDP:5001}
 
-\textbf{Objetivo:} Verificar que solo el host h1 está bloqueado para enviar tráfico UDP al puerto 5001, mientras que otros hosts pueden hacerlo.
+\textbf{Objetivo:} Verificar que solo el host h1 está bloqueado para enviar tráfico \texttt{UDP} al puerto 5001, mientras que otros hosts pueden hacerlo.
 
 \textbf{Regla aplicada:}
 \begin{lstlisting}[language=json]
@@ -130,31 +148,51 @@ h2> echo "test_udp" | nc -u -w 1 10.0.0.3 80
 }
 \end{lstlisting}
 
-\paragraph{Test 3.1: h1 $\rightarrow$ h3:5001 (Debe Fallar)}
+\paragraph{Test 3.1: h1 $\rightarrow$ \texttt{h3:5001} (Debe Fallar)}
 
 \textbf{Comandos ejecutados:}
-\begin{Verbatim}
+\textbf{Resultado obtenido:}
+\begin{log}
+\begin{Sbox}
+\begin{minipage}{0.95\linewidth}
+\begin{verbatim}
 # En h3:
 h3> nc -u -l 5001
 
 # En h1:
 h1> echo "blocked_message" | nc -u -w 1 10.0.0.3 5001
-\end{Verbatim}
+\end{verbatim}
+\end{minipage}
+\end{Sbox}
+\fbox{\TheSbox}
+\caption{Mensaje recibido ``blocked\_message'' en \texttt{h1}}
+\label{lab:test3_1_result}
+\end{log}
 
-\textbf{Resultado obtenido:} El servidor en h3 NO recibe el mensaje.
+\textbf{Resultado obtenido:} El servidor en \texttt{h3} NO recibe el mensaje.
 
-\textbf{Análisis:} El tráfico UDP desde 10.0.0.1 al puerto 5001 está bloqueado.
+\textbf{Análisis:} El tráfico \texttt{UDP} desde \texttt{10.0.0.1} al puerto \texttt{5001} está bloqueado.
 
-\paragraph{Test 3.2: h2 $\rightarrow$ h3:5001 (Debe Funcionar)}
+\paragraph{Test 3.2: \texttt{h2} $\rightarrow$ \texttt{h3:5001} (Debe Funcionar)}
 
 \textbf{Comandos ejecutados:}
-\begin{Verbatim}
+\textbf{Resultado obtenido:}
+\begin{log}
+\begin{Sbox}
+\begin{minipage}{0.95\linewidth}
+\begin{verbatim}
 # En h3:
 h3> nc -u -l 5001
 
 # En h2:
 h2> echo "allowed_message" | nc -u -w 1 10.0.0.3 5001
-\end{Verbatim}
+\end{verbatim}
+\end{minipage}
+\end{Sbox}
+\fbox{\TheSbox}
+\caption{Mensaje recibido ``allowed\_message'' en \texttt{h2}}
+\label{lab:test3_2_result}
+\end{log}
 
 \textbf{Resultado obtenido:}
 \begin{Verbatim}
@@ -162,11 +200,11 @@ h2> echo "allowed_message" | nc -u -w 1 10.0.0.3 5001
 allowed_message
 \end{Verbatim}
 
-\textbf{Análisis:} El tráfico UDP desde otros hosts (h2) al puerto 5001 está permitido, confirmando la granularidad de la regla.
+\textbf{Análisis:} El tráfico UDP desde otros hosts (\texttt{h2}) al puerto \texttt{5001} está permitido, confirmando la granularidad de la regla.
 
 \subsubsection{Test 4: Bloqueo Bidireccional h1 $\leftrightarrow$ h3}
 
-\textbf{Objetivo:} Verificar que el tráfico entre h1 y h3 está bloqueado en ambas direcciones, independientemente del protocolo.
+\textbf{Objetivo:} Verificar que el tráfico entre \texttt{h1} y \texttt{h3} está bloqueado en ambas direcciones, independientemente del protocolo.
 
 \textbf{Reglas aplicadas:}
 \begin{lstlisting}[language=json]
@@ -184,7 +222,7 @@ allowed_message
 ]
 \end{lstlisting}
 
-\paragraph{Test 4.1: h1 $\rightarrow$ h3 (Debe Fallar)}
+\paragraph{Test 4.1: \texttt{h1} $\rightarrow$ \texttt{h3} (Debe Fallar)}
 
 \textbf{Comando ejecutado:}
 \begin{Verbatim}
@@ -192,16 +230,25 @@ mininet> h1 ping -c 3 10.0.0.3
 \end{Verbatim}
 
 \textbf{Resultado obtenido:}
-\begin{Verbatim}
+\begin{log}
+\begin{Sbox}
+\begin{minipage}{0.95\linewidth}
+\begin{verbatim}
 PING 10.0.0.3 (10.0.0.3) 56(84) bytes of data.
 
 --- 10.0.0.3 ping statistics ---
 3 packets transmitted, 0 received, 100% packet loss, time 2055ms
-\end{Verbatim}
+\end{verbatim}
+\end{minipage}
+\end{Sbox}
+\fbox{\TheSbox}
+\caption{Resultado del ping entre \texttt{h1} y \texttt{h3}}
+\label{lab:test4_1_result}
+\end{log}
 
-\textbf{Análisis:} Tráfico de h1 a h3 bloqueado correctamente.
+\textbf{Análisis:} Tráfico de \texttt{h1} a \texttt{h3} bloqueado correctamente.
 
-\paragraph{Test 4.2: h3 $\rightarrow$ h1 (Debe Fallar)}
+\paragraph{Test 4.2: \texttt{h3} $\rightarrow$ \texttt{h1} (Debe Fallar)}
 
 \textbf{Comando ejecutado:}
 \begin{Verbatim}
@@ -209,36 +256,54 @@ mininet> h3 ping -c 3 10.0.0.1
 \end{Verbatim}
 
 \textbf{Resultado obtenido:}
-\begin{Verbatim}
+\begin{log}
+\begin{Sbox}
+\begin{minipage}{0.95\linewidth}
+\begin{verbatim}
 PING 10.0.0.1 (10.0.0.1) 56(84) bytes of data.
 
 --- 10.0.0.1 ping statistics ---
 3 packets transmitted, 0 received, 100% packet loss, time 2043ms
-\end{Verbatim}
+\end{verbatim}
+\end{minipage}
+\end{Sbox}
+\fbox{\TheSbox}
+\caption{Resultado del ping entre \texttt{h3} y \texttt{h1}}
+\label{lab:test4_2_result}
+\end{log}
 
 \textbf{Análisis:} Bloqueo bidireccional funciona correctamente.
 
-\paragraph{Test 4.3: h1 $\rightarrow$ h2 (Debe Funcionar)}
+\paragraph{Test 4.3: \texttt{h1} $\rightarrow$ \texttt{h2} (Debe Funcionar)}
 
-\textbf{Objetivo:} Verificar que h1 puede comunicarse con otros hosts no bloqueados.
+\textbf{Objetivo:} Verificar que \texttt{h1} puede comunicarse con otros hosts no bloqueados.
 
 \textbf{Comando ejecutado:}
 \begin{Verbatim}
-mininet> h1 ping -c 3 10.0.0.2
+mininet> h1 ping -c 3 10.0.0.4
 \end{Verbatim}
 
 \textbf{Resultado obtenido:}
-\begin{Verbatim}
-PING 10.0.0.2 (10.0.0.2) 56(84) bytes of data.
-64 bytes from 10.0.0.2: icmp_seq=1 ttl=64 time=0.145 ms
-64 bytes from 10.0.0.2: icmp_seq=2 ttl=64 time=0.098 ms
-64 bytes from 10.0.0.2: icmp_seq=3 ttl=64 time=0.102 ms
+\begin{log}
+\begin{Sbox}
+\begin{minipage}{0.95\linewidth}
+\begin{verbatim}
+PING 10.0.0.4 (10.0.0.4) 56(84) bytes of data.
+64 bytes from 10.0.0.4: icmp_seq=1 ttl=64 time=0.145 ms
+64 bytes from 10.0.0.4: icmp_seq=2 ttl=64 time=0.098 ms
+64 bytes from 10.0.0.4: icmp_seq=3 ttl=64 time=0.102 ms
 
---- 10.0.0.2 ping statistics ---
+--- 10.0.0.4 ping statistics ---
 3 packets transmitted, 3 received, 0% packet loss, time 2051ms
-\end{Verbatim}
+\end{verbatim}
+\end{minipage}
+\end{Sbox}
+\fbox{\TheSbox}
+\caption{Resultado del ping entre \texttt{h1} y \texttt{h4}}
+\label{lab:test4_2_result}
+\end{log}
 
-\textbf{Análisis:} h1 puede comunicarse con hosts no restringidos, confirmando que la regla es específica para h1 $\leftrightarrow$ h3.
+\textbf{Análisis:} \texttt{h1} puede comunicarse con hosts no restringidos, confirmando que la regla es específica para \texttt{h1} $\leftrightarrow$ \texttt{h3}.
 
 \subsubsection{Resumen de Pruebas Funcionales}
 \begin{table}[H]
@@ -263,11 +328,11 @@ Permitir h3 $\rightarrow$ h4 (ping) & 0\% loss \\
 \label{tab:functional_tests}
 \end{table}
 
-\textbf{Conclusión:} Todas las pruebas funcionales (9/9) pasaron exitosamente, demostrando que el firewall SDN implementa correctamente las políticas de seguridad definidas.
+\textbf{Conclusión:} Todas las pruebas funcionales pasaron exitosamente, demostrando que el firewall SDN implementa correctamente las políticas de seguridad definidas.
 
 \subsection{Pruebas de Rendimiento con iperf}
 
-Se utilizó la herramienta \texttt{iperf} para medir el throughput y evaluar el impacto del firewall en el rendimiento de la red. Las pruebas se ejecutaron entre diferentes pares de hosts con y sin reglas de firewall aplicadas.
+Se utilizó la herramienta \texttt{iperf}\cite{iperf_doc} para medir el throughput y evaluar el impacto del firewall en el rendimiento de la red. Las pruebas se ejecutaron entre diferentes pares de hosts con y sin reglas de firewall aplicadas.
 
 \subsubsection{Test 5: Throughput TCP Sin Restricciones (h2 $\rightarrow$ h4)}
 
@@ -305,7 +370,7 @@ Servidor (h4) & 0.0000-10.0003 & 11.0 GBytes & 9.43 Gbits/sec \\
 Cliente (h2) & 0.0000-10.0107 & 11.0 GBytes & 9.42 Gbits/sec \\
 \bottomrule
 \end{tabular}
-\caption{Resultados Test 5: TCP h2 $\rightarrow$ h4 (sin firewall en el camino)}
+\caption{Resultados Test 5: \texttt{TCP} \texttt{h2} $\rightarrow$ \texttt{h4} (sin firewall en el camino)}
 \label{tab:test5_results}
 \end{table}
 
@@ -323,11 +388,11 @@ Cliente (h2) & 0.0000-10.0107 & 11.0 GBytes & 9.42 Gbits/sec \\
 
 \textbf{Configuración:}
 \begin{itemize}
-    \item Servidor: h3 (puerto 5201)
-    \item Cliente: h2
+    \item Servidor: \texttt{h3} (puerto \texttt{5201})
+    \item Cliente: \texttt{h2}
     \item Duración: 10 segundos
-    \item Protocolo: TCP
-    \item Nota: El switch s2 (firewall) está en el camino, pero el puerto 5201 NO está bloqueado
+    \item Protocolo: \texttt{TCP}
+    \item Nota: El switch \texttt{s2} (firewall) está en el camino, pero el puerto \texttt{5201} NO está bloqueado
 \end{itemize}
 
 \textbf{Comandos ejecutados:}
@@ -352,7 +417,7 @@ Servidor (h3) & 0.0000-10.0002 & 10.7 GBytes & 9.23 Gbits/sec \\
 Cliente (h2) & 0.0000-10.0097 & 10.7 GBytes & 9.22 Gbits/sec \\
 \bottomrule
 \end{tabular}
-\caption{Resultados Test 6: TCP h2 $\rightarrow$ h3 (con firewall activo)}
+\caption{Resultados Test 6: \texttt{TCP} \texttt{h2} $\rightarrow$ \texttt{h3} (con firewall activo)}
 \label{tab:test6_results}
 \end{table}
 
@@ -379,10 +444,10 @@ Transferencia & 11.0 GBytes & 10.7 GBytes & -0.3 GBytes (-2.7\%) \\
     \item  La diferencia es estadísticamente pequeña y puede atribuirse a:
     \begin{itemize}
         \item Procesamiento adicional de matching de paquetes contra reglas
-        \item Posible diferencia en rutas de red (h4 vs h3 en topología)
+        \item Posible diferencia en rutas de red (\texttt{h4} vs \texttt{h3} en topología)
         \item Variabilidad inherente del entorno virtualizado
     \end{itemize}
-    \item  Conclusión: El firewall SDN tiene impacto despreciable en throughput para tráfico permitido
+    \item Conclusión: El firewall SDN tiene impacto despreciable en throughput para tráfico permitido
 \end{itemize}
 
 \subsubsection{Test 7: Throughput UDP (h2 $\rightarrow$ h4)}
@@ -391,10 +456,10 @@ Transferencia & 11.0 GBytes & 10.7 GBytes & -0.3 GBytes (-2.7\%) \\
 
 \textbf{Configuración:}
 \begin{itemize}
-    \item Servidor: h4 (puerto 5201)
-    \item Cliente: h2
+    \item Servidor: \texttt{h4} (puerto \texttt{5201})
+    \item Cliente: \texttt{h2}
     \item Duración: 10 segundos
-    \item Protocolo: UDP
+    \item Protocolo: \texttt{UDP}
     \item Bandwidth objetivo: 100 Mbps
 \end{itemize}
 
@@ -420,29 +485,29 @@ Servidor & 0.0-9.9997s & 125 MBytes & 105 Mbps & 0.004 ms & 0/89169 (0\%) \\
 Cliente & 0.0-10.0001s & 125 MBytes & 105 Mbps & - & - \\
 \bottomrule
 \end{tabular}
-\caption{Resultados Test 7: UDP h2 $\rightarrow$ h4}
+\caption{Resultados Test 7: \texttt{UDP} \texttt{h2} $\rightarrow$ \texttt{h4}}
 \label{tab:test7_results}
 \end{table}
 
 \textbf{Análisis:}
 \begin{itemize}
-    \item  Throughput alcanzado: 105 Mbps (objetivo: 100 Mbps) - ligeramente superior debido al overhead de UDP
+    \item  Throughput alcanzado: 105 Mbps (objetivo: 100 Mbps) - ligeramente superior debido al overhead de \texttt{UDP}
     \item  \textbf{0\% de pérdida de paquetes} (0 de 89169 datagramas perdidos)
     \item  Jitter extremadamente bajo: 0.004 ms (excelente para aplicaciones en tiempo real)
     \item  Cliente envió 89169 datagramas, servidor recibió exactamente 89169
-    \item  Conclusión: La red virtualizada y el firewall SDN manejan tráfico UDP sin degradación
+    \item  Conclusión: La red virtualizada y el firewall SDN manejan tráfico \texttt{UDP} sin degradación
 \end{itemize}
 
 \subsubsection{Test 8: Verificación de Bloqueo con iperf (Puerto 80 TCP)}
 
-\textbf{Objetivo:} Confirmar que el firewall bloquea correctamente el tráfico en puerto restringido usando iperf.
+\textbf{Objetivo:} Confirmar que el firewall bloquea correctamente el tráfico en puerto restringido usando \texttt{iperf}.
 
 \textbf{Configuración:}
 \begin{itemize}
-    \item Servidor: h3 (puerto 80 - \textbf{BLOQUEADO})
-    \item Cliente: h2
-    \item Protocolo: TCP
-    \item Regla activa: Block port 80 (TCP)
+    \item Servidor: \texttt{h3} (puerto 80 - \textbf{BLOQUEADO})
+    \item Cliente: \texttt{h2}
+    \item Protocolo: \texttt{TCP}
+    \item Regla activa: Block port 80 (\texttt{TCP})
 \end{itemize}
 
 \textbf{Comandos ejecutados:}
@@ -456,33 +521,42 @@ h2> iperf -c 10.0.0.3 -p 80 -t 5
 
 \textbf{Resultado obtenido:}
 
-\begin{Verbatim}
-Terminal 1 (h3):
+\begin{log}
+\begin{Sbox}
+\begin{minipage}{0.95\linewidth}
+\begin{verbatim}
+# Terminal 1 (h3):
 Server listening on TCP port 80
 TCP window size: 85.3 KBytes (default)
 
-Terminal 2 (h2):
+# Terminal 2 (h2):
 Client connecting to 10.0.0.3, TCP port 80
 TCP window size: 85.3 KBytes (default)
 
 [  1] local 0.0.0.0 port 0 connected with 10.0.0.3 port 80
 Connection failed: Connection timed out
-\end{Verbatim}
+\end{verbatim}
+\end{minipage}
+\end{Sbox}
+\fbox{\TheSbox}
+\caption{Resultado del intento de conexión \texttt{iperf} al puerto 80 bloqueado}
+\label{lab:test8_result}
+\end{log}
 
 \textbf{Análisis:}
 \begin{itemize}
     \item  El cliente intentó conectarse pero recibió ``Connection timed out"
     \item  El servidor nunca recibió la conexión (no aparece línea ``connected with")
-    \item  El firewall descartó los paquetes SYN del TCP handshake
-    \item  Esto confirma que la regla de bloqueo del puerto 80 TCP funciona correctamente
-    \item  Comportamiento esperado: timeout en lugar de ``Connection refused" porque los paquetes son silenciosamente descartados (DROP) en lugar de rechazados con RST
+    \item  El firewall descartó los paquetes \texttt{SYN} del \texttt{TCP} handshake\cite{tcp_handshake}
+    \item  Esto confirma que la regla de bloqueo del puerto 80 \texttt{TCP} funciona correctamente
+    \item  Comportamiento esperado: timeout en lugar de ``Connection refused" porque los paquetes son silenciosamente descartados (\texttt{DROP}) en lugar de rechazados con \texttt{RST}
 \end{itemize}
 
 \subsection{Pruebas de Latencia}
 
 \subsubsection{Test 9: Latencia ICMP Entre Hosts Permitidos (h2 $\rightarrow$ h4)}
 
-\textbf{Objetivo:} Medir la latencia introducida por el controlador SDN en el camino de datos.
+\textbf{Objetivo:} Medir la latencia introducida por el protocolo ICMP\cite{icmp_rfc} en el camino de datos del controlador SDN.
 
 \textbf{Comando ejecutado:}
 \begin{Verbatim}
@@ -490,7 +564,10 @@ mininet> h2 ping -c 100 10.0.0.4
 \end{Verbatim}
 
 \textbf{Resultado obtenido:}
-\begin{Verbatim}
+\begin{log}
+\begin{Sbox}
+\begin{minipage}{0.95\linewidth}
+\begin{verbatim}
 PING 10.0.0.4 (10.0.0.4) 56(84) bytes of data.
 64 bytes from 10.0.0.4: icmp_seq=1 ttl=54 time=0.875 ms
 64 bytes from 10.0.0.4: icmp_seq=2 ttl=54 time=0.115 ms
@@ -506,7 +583,14 @@ PING 10.0.0.4 (10.0.0.4) 56(84) bytes of data.
 --- 10.0.0.4 ping statistics ---
 100 packets transmitted, 100 received, 0% packet loss, time 110574ms
 rtt min/avg/max/mdev = 0.046/0.072/0.876/0.081 ms
-\end{Verbatim}
+\end{verbatim}
+\end{minipage}
+\end{Sbox}
+\fbox{\TheSbox}
+\caption{Resultado del ping ICMP entre \texttt{h2} y \texttt{h4}}
+\label{lab:test9_result}
+\end{log}
+
 
 \textbf{Análisis de Resultados:}
 
@@ -525,7 +609,7 @@ Pérdida de paquetes & 0\% & Sin pérdidas (100/100) \\
 Tiempo total & 110.574 s & ~1.1s por paquete (esperado) \\
 \bottomrule
 \end{tabular}
-\caption{Estadísticas de latencia ICMP (h2 $\rightarrow$ h4)}
+\caption{Estadísticas de latencia \texttt{ICMP} (\texttt{h2} $\rightarrow$ \texttt{h4})}
 \label{tab:latency_stats}
 \end{table}
 
@@ -550,7 +634,7 @@ Tiempo total & 110.574 s & ~1.1s por paquete (esperado) \\
     
     \item \textbf{TTL = 54:}
     \begin{itemize}
-        \item Indica que los paquetes atravesaron múltiples switches (TTL inicial típicamente 64)
+        \item Indica que los paquetes atravesaron múltiples switches (\texttt{TTL} inicial típicamente 64)
         \item Decremento de ~10 hops sugiere topología en cascada
         \item Compatible con 4 switches + procesamiento del kernel
     \end{itemize}
@@ -602,7 +686,10 @@ mininet> sh ovs-ofctl dump-flows s2
 \end{Verbatim}
 
 \textbf{Resultado obtenido:}
-\begin{Verbatim}
+\begin{log}
+\begin{Sbox}
+\begin{minipage}{0.95\linewidth}
+\begin{verbatim}
 cookie=0x0, duration=45.123s, table=0, n_packets=0, n_bytes=0, 
     priority=10000,tcp,tp_dst=80 actions=drop
 cookie=0x0, duration=45.122s, table=0, n_packets=0, n_bytes=0, 
@@ -617,13 +704,19 @@ cookie=0x0, duration=45.119s, table=0, n_packets=0, n_bytes=0,
 cookie=0x0, duration=45.118s, table=0, n_packets=0, n_bytes=0, 
     priority=10000,dl_src=00:00:00:00:00:03,dl_dst=00:00:00:00:00:01 
     actions=drop
-\end{Verbatim}
+\end{verbatim}
+\end{minipage}
+\end{Sbox}
+\fbox{\TheSbox}
+\caption{Flujos instalados en el switch \texttt{s2} (firewall)}
+\label{lab:test10_result}
+\end{log}
 
 \textbf{Análisis:}
 \begin{itemize}
     \item  Se observan 6 reglas instaladas con prioridad 10000 (firewall)
-    \item  Las reglas incluyen matching por protocolo (tcp/udp/sctp), puerto (80, 5001), y direcciones MAC
-    \item  Todas las reglas tienen acción ``drop''
+    \item  Las reglas incluyen matching por protocolo (\texttt{tcp/udp/sctp}), puerto (80, 5001), y direcciones \texttt{MAC}
+    \item  Todas las reglas tienen acción ``\texttt{drop}''
     \item  El campo \texttt{n\_packets=0} indica que las reglas están instaladas pero aún no han procesado tráfico bloqueado
     \item  Los timestamps (duration) muestran que todas se instalaron en secuencia rápida (~0.001s entre cada una)
 \end{itemize}
@@ -633,7 +726,7 @@ cookie=0x0, duration=45.118s, table=0, n_packets=0, n_bytes=0,
 Las pruebas realizadas demuestran que el sistema de firewall SDN implementado cumple con todos los requisitos funcionales y de rendimiento:
 
 \begin{enumerate}
-    \item \textbf{Corrección funcional:} Todas las reglas de firewall se aplican correctamente, bloqueando tráfico específico por protocolo, puerto, IP y MAC.
+    \item \textbf{Corrección funcional:} Todas las reglas de firewall se aplican correctamente, bloqueando tráfico específico por protocolo, puerto, \texttt{IP} y \texttt{MAC}.
     
     \item \textbf{Rendimiento TCP:} Throughput de ~9.4 Gbps sin firewall vs ~9.2 Gbps con firewall (\textbf{degradación < 3\%}), demostrando impacto mínimo en tráfico permitido.
     
@@ -653,14 +746,14 @@ Las pruebas realizadas demuestran que el sistema de firewall SDN implementado cu
 \textbf{Limitaciones observadas:}
 \begin{itemize}
     \item Latencia adicional del primer paquete (~0.8 ms) debido al procesamiento del controlador
-    \item Throughput ligeramente menor cuando el tráfico atraviesa el switch de firewall (s2)
+    \item Throughput ligeramente menor cuando el tráfico atraviesa el switch de firewall (\texttt{s2})
     \item Dependencia de un controlador centralizado (single point of failure)
 \end{itemize}
 
 \textbf{Casos de uso validados:}
 \begin{itemize}
-    \item  Bloqueo de servicios (HTTP puerto 80)
-    \item  Aislamiento de hosts problemáticos (h1 $\leftrightarrow$ h3)
-    \item  Filtrado selectivo por IP y puerto (h1 $\rightarrow$ UDP:5001)
-    \item  Políticas genéricas multi-protocolo (puerto 80 en TCP/UDP/SCTP)
+    \item  Bloqueo de servicios (\texttt{HTTP} puerto 80)
+    \item  Aislamiento de hosts problemáticos (\texttt{h1} $\leftrightarrow$ \texttt{h3})
+    \item  Filtrado selectivo por \texttt{IP} y puerto (\texttt{h1} $\rightarrow$ \texttt{UDP:5001})
+    \item  Políticas genéricas multi-protocolo (puerto 80 en \texttt{TCP/UDP/SCTP})
 \end{itemize}
