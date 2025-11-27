@@ -34,7 +34,13 @@ A pesar de los logros, el sistema actual presenta limitaciones:
     \item \textbf{Punto único de fallo:} El controlador es un punto crítico de falla; su caída desconecta la red.
     \item \textbf{Escalabilidad:} El aprendizaje (per-switch) no escala a redes grandes con cientos de switches.
     \item \textbf{Sin redundancia:} No hay mecanismo de failover si el controlador falla.
-    \item \textbf{OpenFlow 1.0 limitado:} Versiones posteriores de OpenFlow ofrecen características más avanzadas.
+    \item \textbf{OpenFlow 1.0:} La versión del protocolo utilizada tiene capacidades limitadas:
+    \begin{itemize}
+        \item No soporta nativamente \texttt{IPv6}, matching de campos arbitrarios, ni metadata
+        \item Solo reconoce oficialmente TCP y UDP para matching de puertos (\texttt{tp\_src}/\texttt{tp\_dst})
+        \item SCTP puede especificarse como protocolo (\texttt{nw\_proto=132}) pero sin soporte de puertos
+        \item Versiones posteriores (1.3+)\cite{openflow13} ofrecen mayor flexibilidad y soporte extendido de protocolos
+    \end{itemize}
 \end{itemize}
 
 \subsection{Reflexión Final}

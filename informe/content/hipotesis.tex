@@ -53,10 +53,10 @@ Durante el diseño del sistema, se tomaron las siguientes decisiones clave para 
         \item Reduce overhead en switches que solo hacen forwarding
     \end{itemize}
     
-    \item \textbf{Expansión de reglas genéricas:} Las reglas con protocolo ``\texttt{ANY}" que especifican puertos se expanden automáticamente a múltiples reglas específicas (\texttt{TCP}, \texttt{UDP}, \texttt{SCTP}). Esto permite:
+    \item \textbf{Expansión de reglas genéricas:} Las reglas con protocolo ``\texttt{ANY}" que especifican puertos se expanden automáticamente a múltiples reglas específicas (\texttt{TCP}, \texttt{UDP}). Esto permite:
     \begin{align*}
         \text{Regla: } & \texttt{\{\text{protocol: `ANY', dst\_port: 80}\}} \\
-        \text{Se expande a: } & \texttt{\{\text{TCP:80}\}, \{\text{UDP:80}\}, \{\text{SCTP:80}\}}
+        \text{Se expande a: } & \texttt{\{\text{TCP:80}\}, \{\text{UDP:80}\}}
     \end{align*}
     Esta expansión evita ambigüedades y asegura cobertura completa de los protocolos con puertos.
     

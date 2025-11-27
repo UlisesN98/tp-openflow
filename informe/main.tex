@@ -8,7 +8,7 @@
 \include{utilities/title.tex} 
 
 \begin{abstract}
-Este trabajo implementa un sistema de transferencia de archivos confiable sobre el protocolo UDP, desarrollando protocolos de aplicación que garantizan entrega ordenada y sin errores de los datos. Se implementaron dos esquemas de control de errores: \textbf{Stop and Wait} y \textbf{Selective Repeat}, permitiendo comparar diferentes aproximaciones a la problemática de la confiabilidad en redes de computadoras.
+Este trabajo implementa un firewall programable mediante Software-Defined Networking (SDN) utilizando el protocolo \texttt{OpenFlow 1.0} y el controlador \texttt{POX}. Se desarrolló un sistema que centraliza las políticas de seguridad en el plano de control, permitiendo la configuración dinámica de reglas de filtrado a nivel de direcciones \texttt{MAC}, direcciones \texttt{IP} y puertos de transporte. La arquitectura separa el plano de datos (switches Open vSwitch) del plano de control (controlador \texttt{POX} en \texttt{Python}), aplicando las reglas de firewall proactivamente en un switch designado mientras los demás operan con aprendizaje \texttt{MAC} tradicional. Se implementaron mecanismos de bloqueo por protocolo (\texttt{TCP}, \texttt{UDP}, \texttt{ICMP} y \texttt{STMP}), por host específico, y por combinaciones de estos criterios. Las pruebas realizadas en una topología de 4 switches interconectados demostraron la efectividad del sistema para bloquear tráfico. Este trabajo ilustra las ventajas de SDN para implementar políticas de seguridad centralizadas y programables, comparadas con arquitecturas de red tradicionales distribuidas.
 \end{abstract}
 
 \tableofcontents 

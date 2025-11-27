@@ -210,7 +210,13 @@ Cada regla puede contener los siguientes campos:
 
 \begin{description}
     \item[\texttt{name}] (\texttt{string}): Descripción legible de la regla
-    \item[\texttt{protocol}] (\texttt{string}): Protocolo de transporte (``\texttt{TCP}", ``\texttt{UDP}", ``\texttt{SCTP}", ``\texttt{ICMP}" \footnote{Si bien \texttt{ICMP} no es como tal un protocolo de transporte, se lo pone acá, ya que es la forma que tiene OpenFlow y POX para distingirlo con \texttt{nw\_proto}}, ``\texttt{ANY}")
+    \item[\texttt{protocol}] (\texttt{string}): Protocolo de transporte/red (``\texttt{TCP}", ``\texttt{UDP}", ``\texttt{ICMP}", ``\texttt{SCTP}", ``\texttt{ANY}"). 
+    \begin{itemize}
+        \item \texttt{TCP/UDP}: Soporte completo de puertos (\texttt{tp\_src/tp\_dst})
+        \item \texttt{ICMP}: Sin puertos (matching solo por protocolo)\footnote{Si bien \texttt{ICMP} no es como tal un protocolo de transporte, se lo pone acá, ya que es la forma que tiene OpenFlow y POX para distingirlo con \texttt{nw\_proto}}
+        \item \texttt{SCTP}: Soporte básico de protocolo sin matching de puertos en OpenFlow 1.0
+        \item \texttt{ANY}: Se expande solo a TCP y UDP cuando se especifican puertos
+    \end{itemize}
     \item[\texttt{src\_mac}] (\texttt{string}): Dirección \texttt{MAC} origen (formato XX:XX:XX:XX:XX:XX)
     \item[\texttt{dst\_mac}] (\texttt{string}): Dirección \texttt{MAC} destino
     \item[\texttt{src\_ip}] (\texttt{string}): Dirección \texttt{IPv4} origen
@@ -229,8 +235,7 @@ Las reglas con \texttt{protocol:} ``\texttt{ANY}" que especifican puertos se exp
 \text{Regla}(\text{protocol} = \text{`ANY'}, \text{dst\_port} = p) \Rightarrow 
 \begin{cases}
 \text{Regla}(\text{TCP}, \text{dst\_port} = p) \\
-\text{Regla}(\text{UDP}, \text{dst\_port} = p) \\
-\text{Regla}(\text{SCTP}, \text{dst\_port} = p)
+\text{Regla}(\text{UDP}, \text{dst\_port} = p)
 \end{cases}
 \end{equation}
 
@@ -239,7 +244,6 @@ Ejemplo: La regla \texttt{Block port 80} con protocolo ``\texttt{ANY}" genera tr
 \begin{enumerate}
     \item \texttt{Block port 80} (\texttt{TCP})
     \item \texttt{Block port 80} (\texttt{UDP})
-    \item \texttt{Block port 80} (\texttt{SCTP})
 \end{enumerate}
 
 \subsection{Flujo de Operación del Sistema}
@@ -487,6 +491,8 @@ def install_rule(self, rule, connection):
     fm.actions = []
     connection.send(fm)
 \end{lstlisting}
+
+
 
 \subsubsection{Verificación de Bloqueo (packet\_blocked\_by\_rule)}
 

@@ -5,8 +5,8 @@
 \newblock Software-defined networking (sdn).
 \newblock
   \url{https://www.cisco.com/c/en/us/solutions/software-defined-networking/overview.html},
-  2024.
-\newblock Accessed: 2024.
+  2025.
+\newblock Accessed: 2025.
 
 \bibitem{openflow_odp}
 {Open Networking Foundation}.
@@ -21,8 +21,8 @@
 \newblock What is a firewall?
 \newblock
   \url{https://www.cisco.com/site/us/en/learn/topics/security/what-is-a-firewall.html},
-  2024.
-\newblock Accessed: 2024.
+  2025.
+\newblock Accessed: 2025.
 
 \bibitem{pox_doc}
 {NOXRepo}.
@@ -33,8 +33,8 @@
 \bibitem{mininet}
 {Mininet Team}.
 \newblock Mininet: An instant virtual network on your laptop (or other pc).
-\newblock \url{https://mininet.org/}, 2024.
-\newblock Accessed: 2024.
+\newblock \url{https://mininet.org/}, 2025.
+\newblock Accessed: 2025.
 
 \bibitem{openflow10}
 {Open Networking Foundation}.
@@ -71,14 +71,14 @@ D.~Plummer.
 \newblock Multiprotocol label switching (mpls).
 \newblock
   \url{https://www.cisco.com/c/en/us/tech/multiprotocol-label-switching-mpls/index.html},
-  2024.
-\newblock Accessed: 2024.
+  2025.
+\newblock Accessed: 2025.
 
 \bibitem{openvswitch}
 {Open vSwitch Project}.
 \newblock {\em Open vSwitch Documentation}.
-\newblock Open vSwitch, 2024.
-\newblock Accessed: 2024.
+\newblock Open vSwitch, 2025.
+\newblock Accessed: 2025.
 
 \bibitem{json_format}
 {ECMA International}.
@@ -89,39 +89,39 @@ D.~Plummer.
 \bibitem{aws_cidr}
 {Amazon Web Services}.
 \newblock ¿qué es la notación cidr?
-\newblock \url{https://aws.amazon.com/es/what-is/cidr/}, 2024.
-\newblock Accessed: 2024.
+\newblock \url{https://aws.amazon.com/es/what-is/cidr/}, 2025.
+\newblock Accessed: 2025.
 
 \bibitem{ovs_ofctl}
 {Open vSwitch Project}.
 \newblock ovs-ofctl - openflow switch management utility.
-\newblock \url{https://docs.openvswitch.org/en/latest/ref/ovs-ofctl.8/}, 2024.
-\newblock Accessed: 2024.
+\newblock \url{https://docs.openvswitch.org/en/latest/ref/ovs-ofctl.8/}, 2025.
+\newblock Accessed: 2025.
 
 \bibitem{wireshark}
 {Wireshark Foundation}.
 \newblock Wireshark - network protocol analyzer.
-\newblock \url{https://www.wireshark.org/}, 2024.
-\newblock Accessed: 2024.
+\newblock \url{https://www.wireshark.org/}, 2025.
+\newblock Accessed: 2025.
 
 \bibitem{python_http_server}
 {Python Software Foundation}.
 \newblock Python http.server - http servers.
-\newblock \url{https://docs.python.org/3/library/http.server.html}, 2024.
-\newblock Accessed: 2024.
+\newblock \url{https://docs.python.org/3/library/http.server.html}, 2025.
+\newblock Accessed: 2025.
 
 \bibitem{curl}
 {curl Project}.
 \newblock {\em curl - Command Line Tool and Library for Transferring Data with
   URLs}.
-\newblock curl, 2024.
-\newblock Accessed: 2024.
+\newblock curl, 2025.
+\newblock Accessed: 2025.
 
 \bibitem{netcat}
 {Oracle Corporation}.
 \newblock {\em netcat(1) - Linux Man Page}.
-\newblock Oracle, 2024.
-\newblock Accessed: 2024.
+\newblock Oracle, 2025.
+\newblock Accessed: 2025.
 
 \bibitem{iperf_doc}
 {iperf}.
@@ -134,8 +134,8 @@ D.~Plummer.
 \newblock Tcp three-way handshake.
 \newblock
   \url{https://www.cisco.com/c/en/us/support/docs/ip/transmission-control-protocol-tcp/8742-tcp-handshake.html},
-  2024.
-\newblock Accessed: 2024.
+  2025.
+\newblock Accessed: 2025.
 
 \bibitem{icmp_rfc}
 J.~Postel.
@@ -148,8 +148,8 @@ J.~Postel.
 \newblock Understanding spanning tree protocol (802.1d).
 \newblock
   \url{https://www.cisco.com/c/en/us/support/docs/lan-switching/spanning-tree-protocol/5234-5.html},
-  2024.
-\newblock Accessed: 2024.
+  2025.
+\newblock Accessed: 2025.
 
 \bibitem{rip_rfc2453}
 G.~Malkin.
@@ -178,47 +178,47 @@ T.~Spalink, S.~Karlin, and L.~Peterson.
 {IEEE}.
 \newblock Ieee 802.1q - virtual lans.
 \newblock \url{https://standards.ieee.org/ieee/802.1Q/}, 2022.
-\newblock Accessed: 2024.
+\newblock Accessed: 2025.
 
 \bibitem{cli_management}
 {Cisco Systems}.
 \newblock Network device management via cli.
 \newblock
   \url{https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/fundamentals/command/cf_command_ref.html},
-  2024.
-\newblock Accessed: 2024.
+  2025.
+\newblock Accessed: 2025.
 
 \bibitem{snmp_protocol}
 {Internet Engineering Task Force}.
 \newblock Simple network management protocol (snmp).
-\newblock \url{https://datatracker.ietf.org/wg/snmp/about/}, 2024.
-\newblock Accessed: 2024.
+\newblock \url{https://datatracker.ietf.org/wg/snmp/about/}, 2025.
+\newblock Accessed: 2025.
 
 \bibitem{catalyst_3850}
 {Cisco Systems}.
 \newblock Cisco catalyst 3850 series switches data sheet.
-\newblock 2024.
+\newblock 2025.
 
 \bibitem{arista_7050}
 {Arista Networks}.
 \newblock Arista 7050 series data center switches.
-\newblock \url{https://www.arista.com/en/products/7050-series}, 2024.
-\newblock Accessed: 2024.
+\newblock \url{https://www.arista.com/en/products/7050-series}, 2025.
+\newblock Accessed: 2025.
 
 \bibitem{rpki_security}
 {Internet Society}.
 \newblock Resource public key infrastructure (rpki).
 \newblock
   \url{https://www.internetsociety.org/resources/doc/2020/resource-public-key-infrastructure-rpki/},
-  2024.
-\newblock Accessed: 2024.
+  2025.
+\newblock Accessed: 2025.
 
 \bibitem{ddos_cloudflare}
 {Cloudflare}.
 \newblock What is a ddos attack?
 \newblock
-  \url{https://www.cloudflare.com/learning/ddos/what-is-a-ddos-attack/}, 2024.
-\newblock Accessed: 2024.
+  \url{https://www.cloudflare.com/learning/ddos/what-is-a-ddos-attack/}, 2025.
+\newblock Accessed: 2025.
 
 \bibitem{tcam_cisco}
 {Cisco Systems}.
@@ -226,7 +226,7 @@ T.~Spalink, S.~Karlin, and L.~Peterson.
 \newblock
   \url{https://www.cisco.com/c/en/us/support/docs/switches/catalyst-6500-series-switches/24046-143.html},
   2023.
-\newblock Accessed: 2024.
+\newblock Accessed: 2025.
 
 \bibitem{ecmp_rfc2992}
 D.~Thaler and C.~Hopps.
@@ -237,8 +237,8 @@ D.~Thaler and C.~Hopps.
 \bibitem{onos_controller}
 {Open Networking Foundation}.
 \newblock Onos - open network operating system.
-\newblock \url{https://opennetworking.org/onos/}, 2024.
-\newblock Accessed: 2024.
+\newblock \url{https://opennetworking.org/onos/}, 2025.
+\newblock Accessed: 2025.
 
 \bibitem{google_b4}
 S.~Jain, A.~Kumar, S.~Mandal, J.~Ong, L.~Poutievski, A.~Singh, S.~Venkata,

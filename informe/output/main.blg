@@ -31,7 +31,7 @@ Warning--empty journal in catalyst_3850
 Warning--can't use both volume and number fields in p4_language
 You've used 40 entries,
             1791 wiz_defined-function locations,
-            634 strings with 8247 characters,
+            632 strings with 8229 characters,
 and the built_in function-call counts, 6291 in all, are:
 = -- 563
 > -- 264
