@@ -24,10 +24,8 @@ def start_net():
     return net, h1, h2, h3, h4
 
 
-def test_rule_1_tcp_block():
+def test_rule_1_tcp_block(h1, h2, h3, h4):
     print("\n -------- Rule 1: Block port 80 -------- ")
-
-    net, h1, h2, h3, h4 = start_net()
 
     print("Starting TCP server on h1 port 80")
     h1.cmd("iperf -s -p 80 &")
@@ -39,13 +37,13 @@ def test_rule_1_tcp_block():
 
     print("Test TCP port 80 with h2 allowed (h2 -> h1)")
     print(h2.cmd("iperf -c 10.0.0.1 -p 80"))
+    h1.cmd("^C") 
+    h2.cmd("^C") 
+    h3.cmd("^C")
+    h4.cmd("^C")
 
-    net.stop()
 
-
-def test_rule_1_udp_block():
-    net, h1, h2, h3, h4 = start_net()
-
+def test_rule_1_udp_block(h1, h2, h3, h4):
     print("Starting UDP server on h1 port 80")
     h1.cmd("iperf -s -u -p 80 &")
     sleep(1)
@@ -55,69 +53,63 @@ def test_rule_1_udp_block():
 
     print("Test TCP port 80 with h2 allowed (h2 -> h1)")
     print(h2.cmd("iperf -c 10.0.0.1 -u -p 80"))
+    h1.cmd("^C"), h2.cmd("^C"), h3.cmd("^C"), h4.cmd("^C")
 
-    net.stop()
 
 
-def test_rule_2_udp_block():
+def test_rule_2_udp_block(h1, h2, h3, h4):
     print("\n-------- Rule 2: Host_1 with UDP and port 5001 must be blocked --------")
 
-    net, h1, h2, h3, h4 = start_net()
-
-    print("Starting UDP server on h2 port 5001")
+    print("Starting UDP server on h4 port 5001")
     h4.cmd("iperf -s -u -p 5001 &")
     sleep(1)
 
-    print("Test h1 -> h2 with UDP/5001 must be blocked")
+    print("Test h1 -> h4 with UDP/5001 must be blocked")
     print(h1.cmd("timeout 3 iperf -u -c 10.0.0.4 -p 5001 -t 3"))
+    h1.cmd("^C"), h2.cmd("^C"), h3.cmd("^C"), h4.cmd("^C")
 
-    net.stop()
 
 
-def test_rule_2_tcp_allowed():
-    net, h1, h2, h3, h4 = start_net()
-
-    print("Test h1 -> h2 with TCP/5001 allowed")
+def test_rule_2_tcp_allowed(h1, h2, h3, h4):
+    print("Test h1 -> h4 with TCP/5001 allowed")
     h4.cmd("iperf -s -p 5001 &")
     sleep(1)
     print(h1.cmd("iperf -c 10.0.0.4 -p 5001 -t 3"))
+    h1.cmd("^C"), h2.cmd("^C"), h3.cmd("^C"), h4.cmd("^C")
 
-    net.stop()
 
 
-def test_rule_3_block():
+def test_rule_3_block(h1, h2, h3, h4):
     print("\n-------- Rule 3: Host_1 -> Host_3 blocked --------")
-
-    net, h1, h2, h3, h4 = start_net()
 
     print("Test UDP h1 -> h3 blocked")
     h3.cmd("iperf -u -s -p 6000 &")
     sleep(1)
     print(h1.cmd("timeout 3 iperf -u -c 10.0.0.3 -p 6000 -t 3"))
+    h1.cmd("^C"), h2.cmd("^C"), h3.cmd("^C"), h4.cmd("^C")
 
-    net.stop()
 
 
-def test_rule_4_block():
+def test_rule_4_block(h1, h2, h3, h4):
     print("\n-------- Rule 4: Host_3 -> Host_1 blocked --------")
-
-    net, h1, h2, h3, h4 = start_net()
 
     print("Test UDP h3 -> h1 blocked")
     h1.cmd("iperf -u -s -p 7000 &")
     sleep(1)
     print(h3.cmd("timeout 3 iperf -u -c 10.0.0.1 -p 7000 -t 3"))
+    h1.cmd("^C"), h2.cmd("^C"), h3.cmd("^C"), h4.cmd("^C")
 
-    net.stop()
 
 
 def run_tests():
-    test_rule_1_tcp_block()
-    test_rule_1_udp_block()
-    test_rule_2_udp_block()
-    test_rule_2_tcp_allowed()
-    test_rule_3_block()
-    test_rule_4_block()
+    net, h1, h2, h3, h4 = start_net()
+    test_rule_1_tcp_block(h1, h2, h3, h4)
+    test_rule_1_udp_block(h1, h2, h3, h4)
+    test_rule_2_udp_block(h1, h2, h3, h4)
+    test_rule_2_tcp_allowed(h1, h2, h3, h4)
+    test_rule_3_block(h1, h2, h3, h4)
+    test_rule_4_block(h1, h2, h3, h4)
+    net.stop()
 
 
 if __name__ == "__main__":
